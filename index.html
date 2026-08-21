@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f051d">
+    <title>Smoke-Beater</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚬</text></svg>">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --magi-bg: #0f051d;
+            --magi-card: #2e0854;
+            --magi-card-dark: #1a0933;
+            --magi-accent: #7c3aed;
+            --magi-accent-light: #a855f7;
+            --magi-gold: #facc15;
+            --magi-gold-dark: #eab308;
+        }
+        
+        body {
+            background-color: var(--magi-bg);
+            font-family: 'VT323', monospace;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+            user-select: none;
+            color: #e5e7eb;
+        }
+        
+        .font-pixel { font-family: 'Press Start 2P', cursive; }
+        .pt-safe { padding-top: env(safe-area-inset-top, 20px); }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
+        .top-safe { top: env(safe-area-inset-top, 20px); }
+        
+        /* Dialog Boxes */
+        .gba-dialog {
+            background: var(--magi-card);
+            border: 4px solid var(--magi-gold);
+            border-radius: 6px;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.8);
+            position: relative;
+            color: #fff;
+        }
+        .gba-dialog::after {
+            content: '';
+            position: absolute;
+            top: 2px; left: 2px; right: 2px; bottom: 2px;
+            border: 2px solid var(--magi-accent-light);
+            border-radius: 2px;
+            pointer-events: none;
+        }
+        .gba-dark-box {
+            background: var(--magi-card-dark);
+            border: 4px solid var(--magi-accent);
+            color: #fff;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.9);
+            border-radius: 6px;
+            position: relative;
+        }
+        .gba-dark-box::after {
+            content: '';
+            position: absolute;
+            top: 2px; left: 2px; right: 2px; bottom: 2px;
+            border: 2px solid rgba(250, 204, 21, 0.4);
+            pointer-events: none;
+        }
+
+        /* HP Bars */
+        .hp-bar-bg { background: #111; border: 2px solid #555; border-radius: 4px; padding: 1px; }
+        .hp-bar-fill { height: 100%; transition: width 0.3s, background-color 0.3s; border-radius: 1px; }
+        .hp-high { background: #4ade80; box-shadow: inset 0 -2px 0 #16a34a; }
+        .hp-med { background: #facc15; box-shadow: inset 0 -2px 0 #ca8a04; }
+        .hp-low { background: #ef4444; box-shadow: inset 0 -2px 0 #b91c1c; }
+
+        /* ========================================================
+           BATTLE ARENA: 4-LAYER 3D PERSPECTIVE SYSTEM
+           ======================================================== */
+        #battle-sky, #battle-horizon, #battle-floor, .plat-base { transition: background 1s ease-in-out, border 1s ease-in-out; }
+        #battle-floor { transform: perspective(300px) rotateX(50deg); transform-origin: top; width: 140%; left: -20%; }
+
+        /* BIOME: 0 SWAMP */
+        .sky-0 { background: linear-gradient(to top, #064e3b, #020617); }
+        .hor-0 { background: linear-gradient(to top, #022c22, transparent); }
+        .flr-0 { background: linear-gradient(180deg, #022c22, #064e3b); border-top: 2px solid #10b981; }
+        .plt-0 { background: radial-gradient(ellipse at center, #059669 0%, #022c22 80%); }
+
+        /* BIOME: 1 GROTTO */
+        .sky-1 { background: radial-gradient(circle at bottom, #4c1d95, #0f172a); }
+        .hor-1 { background: linear-gradient(to top, #2e1065, transparent); }
+        .flr-1 { background: repeating-linear-gradient(90deg, #2e1065, #2e1065 20px, #4c1d95 20px, #4c1d95 40px); border-top: 2px solid #8b5cf6; }
+        .plt-1 { background: radial-gradient(ellipse at center, #7c3aed 0%, #2e1065 80%); }
+
+        /* BIOME: 2 DOJO */
+        .sky-2 { background: linear-gradient(to top, #1e1b4b, #000); }
+        .hor-2 { background: linear-gradient(to top, #312e81, transparent); }
+        .flr-2 { background: repeating-linear-gradient(90deg, #451a03, #451a03 15px, #78350f 15px, #78350f 30px); border-top: 3px solid #b45309; }
+        .plt-2 { background: radial-gradient(ellipse at center, #92400e 0%, #451a03 80%); }
+
+        /* BIOME: 3 CYBER */
+        .sky-3 { background: #000; }
+        .hor-3 { background: linear-gradient(to top, #4c1d95, transparent); }
+        .flr-3 { background: linear-gradient(transparent 95%, #c084fc 100%), linear-gradient(90deg, transparent 95%, #c084fc 100%); background-size: 30px 30px; background-color: #000; border-top: 2px solid #a855f7; }
+        .plt-3 { background: radial-gradient(ellipse at center, #a855f7 0%, #000 80%); }
+
+        /* BIOME: 4 VOLCANO */
+        .sky-4 { background: linear-gradient(to top, #7f1d1d, #1a0933); }
+        .hor-4 { background: linear-gradient(to top, #450a0a, transparent); }
+        .flr-4 { background: radial-gradient(circle at top, #991b1b, #450a0a); border-top: 2px solid #dc2626; }
+        .plt-4 { background: radial-gradient(ellipse at center, #dc2626 0%, #450a0a 80%); }
+
+        /* BIOME: 5 ZEN */
+        .sky-5 { background: radial-gradient(circle at center, #3b0764, #0f051d); }
+        .hor-5 { background: linear-gradient(to top, #2e0854, transparent); }
+        .flr-5 { background: repeating-radial-gradient(circle at top, #3b0764, #3b0764 20px, #2e0854 20px, #2e0854 40px); border-top: 2px solid #a855f7; }
+        .plt-5 { background: radial-gradient(ellipse at center, #9333ea 0%, #2e0854 80%); }
+
+        /* BIOME: 6 SKY */
+        .sky-6 { background: linear-gradient(to bottom, #1e1b4b, #6d28d9); }
+        .hor-6 { background: linear-gradient(to top, #c084fc, transparent); }
+        .flr-6 { background: linear-gradient(180deg, #ddd6fe, #8b5cf6); border-top: 3px solid #fff; }
+        .plt-6 { background: radial-gradient(ellipse at center, #c084fc 0%, #6d28d9 80%); }
+
+        /* BIOME: 7 COSMOS */
+        .sky-7 { background: #000; }
+        .hor-7 { background: linear-gradient(to top, #3b0764, transparent); }
+        .flr-7 { background: radial-gradient(ellipse at top, #1e1b4b, #000); border-top: 1px solid #6d28d9; }
+        .plt-7 { background: radial-gradient(ellipse at center, #6d28d9 0%, #000 80%); }
+
+        /* BIOME: 8 CHAMPION */
+        .sky-8 { background: radial-gradient(circle at top, #facc15 0%, #7c3aed 50%, #0f051d 100%); }
+        .hor-8 { background: linear-gradient(to top, #eab308, transparent); }
+        .flr-8 { background: linear-gradient(180deg, #fef08a, #ca8a04); border-top: 4px solid #fff; }
+        .plt-8 { background: radial-gradient(ellipse at center, #fef08a 0%, #ca8a04 80%); }
+
+        /* SOLID PARTICLES (HIGH OPACITY, VISIBLE RETRO FEEL) */
+        .p-swamp-fog { position: absolute; width: 100%; height: 35%; bottom: 0; background: rgba(16,185,129,0.7); filter: blur(5px); animation: p-drift 10s infinite alternate linear; }
+        .p-acid-bubble { position: absolute; width: 14px; height: 14px; border-radius: 50%; background: #34d399; border: 2px solid #a7f3d0; animation: p-rise 3s infinite ease-in; opacity: 0.9; }
+        .p-will-o-wisp { position: absolute; width: 16px; height: 16px; border-radius: 50%; background: #10b981; box-shadow: 0 0 15px #34d399; animation: p-float 4s infinite alternate ease-in-out; opacity: 1; }
+
+        .p-crystal-shard { position: absolute; width: 12px; height: 16px; background: #c084fc; border: 1px solid #e9d5ff; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); animation: p-spin-fall 4s infinite linear; opacity: 1; }
+
+        .p-sakura { position: absolute; width: 10px; height: 7px; background: #fbcfe8; border-radius: 10px 0 10px 0; animation: p-sakura-fall 5s infinite linear; opacity: 1; }
+        .p-dojo-moon { position: absolute; width: 80px; height: 80px; background: #fef08a; border-radius: 50%; box-shadow: 0 0 30px #ca8a04; top: 10%; right: 25%; }
+
+        .p-neon-spark { position: absolute; width: 3px; height: 30px; background: #22d3ee; animation: p-strike 0.5s infinite; opacity: 1; }
+
+        .p-ember { position: absolute; width: 8px; height: 8px; background: #facc15; border-radius: 50%; box-shadow: 0 0 10px #ef4444; animation: p-rise-fast 2s infinite ease-out; opacity: 1; }
+
+        .p-spirit { position: absolute; width: 15px; height: 15px; background: #22d3ee; border-radius: 50%; animation: p-float 3s infinite alternate ease-in-out; opacity: 0.9; }
+
+        .p-cloud { position: absolute; background: #fff; border-radius: 50px; opacity: 0.8; animation: p-drift-fast 15s infinite linear; }
+
+        .p-star { position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%; animation: p-twinkle 1s infinite alternate; opacity: 1; }
+        .p-shooting-star { position: absolute; width: 60px; height: 3px; background: linear-gradient(90deg, #fff, transparent); transform: rotate(-45deg); animation: p-shoot 3s infinite; opacity: 1; }
+
+        .p-god-ray { position: absolute; width: 50px; height: 200%; background: linear-gradient(180deg, rgba(250,204,21,0.5), transparent); transform-origin: top center; animation: p-ray-swing 6s infinite alternate ease-in-out; }
+
+        /* SPRITE ANIMATIONS */
+        #smogmon-svg { animation: float-smog 3s ease-in-out infinite; transition: opacity 0.5s, filter 0.5s; position: relative; z-index: 20; }
+        @keyframes float-smog { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        
+        @keyframes smog-hit {
+            0%, 100% { filter: brightness(1); transform: scale(1) translateX(0); }
+            25% { filter: brightness(2) sepia(1) hue-rotate(-50deg); transform: scale(0.9) translateX(-4px); }
+            75% { filter: brightness(2) sepia(1) hue-rotate(-50deg); transform: scale(0.9) translateX(4px); }
+        }
+        .anim-smog-hit { animation: smog-hit 0.4s ease-in-out; }
+        
+        .smog-spore { position: absolute; width: 8px; height: 8px; background: #a855f7; border-radius: 50%; animation: spore-float 2s linear forwards; z-index: 15; }
+        
+        .idle-breathe { animation: breathe 3s ease-in-out infinite; transform-origin: bottom center; }
+        @keyframes breathe { 0%, 100% { transform: scaleY(1) translateY(0); filter: drop-shadow(0 0 10px rgba(6,182,212,0.5)); } 50% { transform: scaleY(0.95) translateY(3px); filter: drop-shadow(0 0 25px rgba(6,182,212,0.9)); } }
+
+        @keyframes hit-shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            20% { transform: translate(-3px, 0px) rotate(2deg); }
+            40% { transform: translate(3px, 3px) rotate(0deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            80% { transform: translate(1px, -1px) rotate(2deg); }
+            100% { transform: translate(1px, -2px) rotate(-2deg); }
+        }
+        .anim-shake { animation: hit-shake 0.5s !important; }
+        .gekkouga-hit { filter: brightness(1.5) sepia(1) hue-rotate(-50deg) saturate(5) drop-shadow(0 0 30px #ef4444) !important; }
+
+        /* KEYFRAMES FOR PARTICLES */
+        @keyframes p-drift { 0% { transform: translateX(-5%); } 100% { transform: translateX(5%); } }
+        @keyframes p-drift-fast { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100vw); } }
+        @keyframes p-rise { 0% { transform: translateY(50px) scale(0.5); opacity: 1; } 100% { transform: translateY(-150px) scale(1.5); opacity: 0; } }
+        @keyframes p-rise-fast { 0% { transform: translateY(0px); opacity: 1; } 100% { transform: translateY(-200px); opacity: 0; } }
+        @keyframes p-float { 0% { transform: translate(0,0); } 100% { transform: translate(30px, -40px); } }
+        @keyframes p-spin-fall { 0% { transform: translateY(-20px) rotate(0deg); } 100% { transform: translateY(200px) rotate(360deg); } }
+        @keyframes p-sakura-fall { 0% { transform: translate(0, -20px) rotate(0deg); } 100% { transform: translate(-100px, 250px) rotate(360deg); } }
+        @keyframes p-strike { 0%, 100% { opacity: 0; } 50% { opacity: 1; transform: translateY(100px); } }
+        @keyframes p-twinkle { 0% { opacity: 0.2; } 100% { opacity: 1; box-shadow: 0 0 5px #fff; } }
+        @keyframes p-shoot { 0% { transform: translate(100px, -100px) rotate(-45deg); opacity: 1; } 20% { transform: translate(-300px, 300px) rotate(-45deg); opacity: 0; } 100% { opacity: 0; } }
+        @keyframes p-ray-swing { 0% { transform: rotate(-15deg); } 100% { transform: rotate(15deg); } }
+        @keyframes spore-float { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(calc(40px * var(--vx)), calc(40px * var(--vy))) scale(1.5); opacity: 0; } }
+
+        /* Badges */
+        .badge-box { background: var(--magi-card-dark); border-color: var(--magi-accent); }
+        .badge-icon { filter: grayscale(100%) opacity(0.3); transition: all 0.5s; }
+        .badge.unlocked .badge-icon { filter: grayscale(0%) opacity(1) drop-shadow(0 0 6px var(--magi-gold)); }
+        .badge.unlocked { background: var(--magi-card); border-color: var(--magi-gold); }
+
+        /* Chakra */
+        .chakra-base { transition: all 1s ease-in-out; }
+        .chakra-off { opacity: 0; transform: scale(0.5); }
+        .chakra-inhale-r1 { border-color: var(--magi-accent-light); border-style: dashed; opacity: 0.8; transform: scale(1); animation: spin 2s linear infinite; }
+        .chakra-inhale-r2 { border-color: #c084fc; border-style: dotted; opacity: 0.8; transform: scale(0.8); animation: spin 1.5s linear reverse infinite; }
+        .chakra-inhale-c { background-color: var(--magi-accent); opacity: 0.6; transform: scale(1.2); }
+        .chakra-hold-r1 { border-color: var(--magi-gold); border-style: solid; opacity: 1; transform: scale(0.8); animation: spin 0.3s linear infinite; }
+        .chakra-hold-r2 { border-color: var(--magi-gold-dark); border-style: dashed; opacity: 1; transform: scale(0.6); animation: spin 0.2s linear reverse infinite; }
+        .chakra-hold-c { background-color: var(--magi-gold); opacity: 0.9; transform: scale(1.5); animation: pulse 0.5s infinite; }
+        .chakra-exhale-r1 { border-color: #06b6d4; border-style: solid; opacity: 0.4; transform: scale(1.5); animation: spin 4s linear infinite; }
+        .chakra-exhale-r2 { border-color: #22d3ee; border-style: dashed; opacity: 0.5; transform: scale(1.3); animation: spin 3s linear reverse infinite; }
+        .chakra-exhale-c { background-color: #0891b2; opacity: 0.3; transform: scale(0.9); }
+
+        ::-webkit-scrollbar { display: none; }
+        .hidden-app { display: none !important; }
+    </style>
+</head>
+<body class="w-full flex flex-col pt-safe pb-safe min-h-screen">
+
+    <div id="view-dashboard" class="flex-1 flex flex-col p-3 space-y-4 overflow-y-auto pb-8 z-10 w-full max-w-[600px] mx-auto">
+        
+        <header class="flex justify-between items-center px-1">
+            <h1 class="font-pixel text-[10px] text-yellow-400 text-shadow-sm leading-relaxed">SMOKE-BEATER</h1>
+            <button onclick="toggleSettings(); playSound('click');" class="gba-dialog !border-2 p-2 !bg-[#2e0854] active:bg-[#4c1d95] shadow-none cursor-pointer">
+                <span class="font-pixel text-[8px] text-yellow-400">OPT</span>
+            </button>
+        </header>
+
+        <!-- BATTLE SCREEN (4-LAYER PERSPECTIVE) -->
+        <div class="gba-dialog relative w-full h-[280px] max-w-[600px] mx-auto overflow-hidden mb-2" id="battle-screen">
+            
+            <!-- SCENE LAYERS -->
+            <div class="absolute inset-0 z-0 pointer-events-none">
+                <div id="battle-sky" class="absolute top-0 w-full h-[55%] sky-0"></div>
+                <div id="battle-horizon" class="absolute top-[55%] w-full h-[15%] -translate-y-1/2 hor-0"></div>
+                <div class="absolute bottom-0 w-full h-[45%] overflow-hidden">
+                    <div id="battle-floor" class="absolute bottom-0 h-[150%] flr-0"></div>
+                </div>
+                <div id="battle-particles" class="absolute inset-0" data-arena="-1"></div>
+            </div>
+
+            <!-- UI: Enemy HP (Top Left) -->
+            <div class="absolute top-2 left-2 w-[150px] gba-dialog p-2 !border-2 shadow-md !bg-[#1a0933] z-20">
+                <div class="flex justify-between items-end mb-1 border-b border-[#4c1d95] pb-1">
+                    <span class="font-pixel text-[8px] uppercase font-bold text-white">Smog-Mon</span>
+                    <span class="font-pixel text-[6px] text-gray-300">Lv 99</span>
+                </div>
+                <div class="flex items-center justify-between gap-1 mb-1">
+                    <span class="font-pixel text-[6px] text-yellow-500 font-bold">KP</span>
+                    <span id="smogmon-hp-val" class="font-pixel text-[6px] text-white ml-auto">100.0%</span>
+                </div>
+                <div class="flex-1 hp-bar-bg h-2">
+                    <div id="smogmon-hp-bar" class="hp-bar-fill hp-high" style="width:100%"></div>
+                </div>
+            </div>
+
+            <!-- ENEMY SPRITE & PLATFORM (Top Right) -->
+            <div class="absolute right-[5%] top-[15%] w-[100px] h-[100px] z-10 flex flex-col items-center justify-end">
+                <div class="absolute bottom-0 w-[110px] h-[30px] rounded-[100%] border border-white/20 shadow-[0_10px_20px_rgba(0,0,0,0.8)] z-0 plat-base plt-0" id="platform-enemy"></div>
+                <div class="absolute bottom-1 w-[50px] h-[10px] bg-black/60 rounded-[100%] blur-[2px] z-10"></div>
+                <div id="smogmon-container" class="relative z-20 w-16 h-16 mb-2 flex items-center justify-center">
+                     <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_0_10px_rgba(0,0,0,1)]" id="smogmon-svg">
+                        <circle cx="50" cy="50" r="30" fill="#6b21a8" />
+                        <circle cx="50" cy="50" r="26" fill="#9333ea" />
+                        <circle cx="30" cy="35" r="8" fill="#7e22ce" />
+                        <circle cx="75" cy="45" r="10" fill="#7e22ce" />
+                        <circle cx="40" cy="75" r="9" fill="#7e22ce" />
+                        <path d="M35 45 L45 42 L45 48 Z" fill="#facc15" />
+                        <path d="M65 45 L55 42 L55 48 Z" fill="#facc15" />
+                        <circle cx="42" cy="45" r="2" fill="#000" />
+                        <circle cx="58" cy="45" r="2" fill="#000" />
+                        <path d="M40 60 Q50 55 60 60" stroke="#facc15" stroke-width="3" fill="none" />
+                        <circle cx="20" cy="20" r="10" fill="rgba(156, 163, 175, 0.9)" />
+                        <circle cx="80" cy="25" r="12" fill="rgba(156, 163, 175, 0.9)" />
+                        <circle cx="85" cy="70" r="8" fill="rgba(156, 163, 175, 0.9)" />
+                     </svg>
+                </div>
+            </div>
+
+            <!-- UI: Player HP (Bottom Right) -->
+            <div class="absolute bottom-2 right-2 w-[160px] gba-dialog p-2 !border-2 shadow-md !bg-[#1a0933] z-20" id="player-stats-box">
+                <div class="flex justify-between items-end mb-1 border-b border-[#4c1d95] pb-1">
+                    <span class="font-pixel text-[8px] uppercase font-bold text-white">Ash-Quajutsu</span>
+                    <span id="player-lvl" class="font-pixel text-[6px] text-gray-300">Lv 1</span>
+                </div>
+                <div class="flex items-center justify-between mb-1">
+                    <span class="font-pixel text-[6px] text-yellow-500 font-bold">KP</span>
+                    <span id="player-hp-val" class="font-pixel text-[6px] text-white">100/100</span>
+                </div>
+                <div class="flex-1 hp-bar-bg h-2 mb-1.5">
+                    <div id="player-hp-bar" class="hp-bar-fill hp-high" style="width:100%"></div>
+                </div>
+                <div id="player-hp-status" class="mb-0.5"></div>
+            </div>
+
+            <!-- PLAYER SPRITE & PLATFORM (Bottom Left) -->
+            <div class="absolute left-[5%] bottom-[10%] w-[120px] h-[120px] z-10 flex flex-col items-center justify-end">
+                <div class="absolute bottom-0 w-[130px] h-[35px] rounded-[100%] border border-white/20 shadow-[0_10px_20px_rgba(0,0,0,0.8)] z-0 plat-base plt-0" id="platform-player"></div>
+                <div class="absolute bottom-2 w-[60px] h-[12px] bg-black/70 rounded-[100%] blur-[2px] z-10"></div>
+                <img src="gekkouga.png" alt="Ash-Quajutsu" class="relative z-20 w-24 h-24 mb-1 object-contain idle-breathe transition-transform drop-shadow-[0_0_10px_rgba(0,0,0,0.8)]" id="player-sprite">
+            </div>
+
+            <!-- FLOATING TEXT OVERLAY -->
+            <div id="battle-fx-layer" class="absolute inset-0 z-50 pointer-events-none"></div>
+            
+            <!-- LIVE TIMER -->
+            <div class="absolute bottom-2 left-2 z-20 p-1 bg-black/60 rounded border border-purple-500/50">
+                 <p class="font-pixel text-[5px] text-purple-300 mb-1">RAUCHFREI SEIT:</p>
+                 <p id="live-timer" class="font-pixel text-[8px] text-yellow-400 drop-shadow-md">0T 00H 00M 00S</p>
+            </div>
+        </div>
+
+        <!-- ACTION MENU & FINANCES -->
+        <div class="grid grid-cols-2 gap-3">
+            <button onclick="logSmoke()" class="gba-dialog !border-4 !border-purple-600 p-2 !bg-[#2e0854] hover:!bg-[#4c1d95] active:scale-95 transition-transform flex flex-col items-center justify-center shadow-[0_4px_15px_rgba(124,58,237,0.4)]">
+                <span class="text-2xl mb-1">🔥</span>
+                <span class="font-pixel text-[6px] text-purple-200 leading-[1.8] text-center font-bold">ATTACKE: RAUCHEN<br>(-20 KP)</span>
+            </button>
+            <div class="gba-dialog !border-4 !border-purple-600 p-2 !bg-[#1a0933] flex flex-col justify-center items-center">
+                <span class="font-pixel text-[6px] text-purple-300 mb-1 tracking-wider">KOSTEN (GELOGGT)</span>
+                <span id="total-cost" class="font-pixel text-[11px] text-red-500 tracking-wider mb-2">€ 0,00</span>
+                
+                <span class="font-pixel text-[6px] text-purple-300 mb-1 tracking-wider border-t border-[#4c1d95] pt-1 w-full text-center">GESPART (RAUCHFREI)</span>
+                <span id="total-saved" class="font-pixel text-[11px] text-emerald-400 tracking-wider">€ 0,00</span>
+            </div>
+        </div>
+
+        <!-- TRAINER CARD (BADGES) -->
+        <div class="gba-dialog !border-4 p-3 !bg-[#1a0933]">
+            <h2 class="font-pixel text-[8px] text-yellow-400 mb-3 border-b-2 border-[#4c1d95] pb-2 flex justify-between items-center">
+                <span>TRAINER-PASS</span>
+                <div class="flex gap-2 items-center">
+                    <button id="btn-champ" onclick="showChampionModal()" class="hidden-app bg-yellow-400 text-yellow-900 border border-yellow-600 px-1 py-0.5 rounded text-[5px] animate-pulse cursor-pointer">RUHMESHALLE</button>
+                    <span class="text-purple-300">ORDEN</span>
+                </div>
+            </h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="badges-container">
+                <!-- Badges JS Injected -->
+            </div>
+        </div>
+
+        <!-- EPIC CHAKRA BREATHE WIDGET -->
+        <div class="gba-dark-box p-4 flex flex-col items-center relative overflow-hidden min-h-[180px]">
+             <h2 class="font-pixel text-[8px] text-purple-300 mb-4 tracking-wider w-full text-center border-b border-[#4c1d95] pb-2">SHURIKEN CHAKRA (CRAVING)</h2>
+             
+             <!-- Multi-layer Chakra Aura -->
+             <div class="relative w-32 h-32 flex items-center justify-center mt-2 cursor-pointer" onclick="toggleBreathe()">
+                 <div id="aura-ring-1" class="absolute w-full h-full rounded-full border-2 border-purple-500 border-dashed opacity-30 chakra-base"></div>
+                 <div id="aura-ring-2" class="absolute w-3/4 h-3/4 rounded-full border-2 border-purple-400 border-dotted opacity-50 chakra-base"></div>
+                 <div id="aura-center" class="absolute w-1/2 h-1/2 rounded-full bg-purple-600 blur-md opacity-20 chakra-base"></div>
+                 
+                 <div class="relative z-10 text-center select-none">
+                     <span id="breathe-sec" class="font-pixel text-xl text-yellow-400 block drop-shadow-md">START</span>
+                     <span id="breathe-text" class="font-pixel text-[6px] text-purple-200 mt-2 block tracking-widest drop-shadow-md">TIPPEN</span>
+                 </div>
+             </div>
+        </div>
+
+        <!-- ANALYTICS CHART -->
+        <div class="gba-dialog !border-4 p-3 !bg-[#1a0933]">
+            <div class="flex justify-between items-center mb-3 border-b-2 border-[#4c1d95] pb-2">
+                <h2 class="font-pixel text-[8px] text-yellow-400">POKé-DEX STATS</h2>
+                <div class="flex gap-1">
+                    <button onclick="setChartMode('today'); playSound('click');" id="btn-chart-today" class="font-pixel text-[6px] px-2 py-1.5 bg-[#7c3aed] text-white rounded shadow-sm">24H</button>
+                    <button onclick="setChartMode('week'); playSound('click');" id="btn-chart-week" class="font-pixel text-[6px] px-2 py-1.5 bg-[#2e0854] text-purple-300 rounded shadow-sm">7T</button>
+                    <button onclick="setChartMode('month'); playSound('click');" id="btn-chart-month" class="font-pixel text-[6px] px-2 py-1.5 bg-[#2e0854] text-purple-300 rounded shadow-sm">4W</button>
+                </div>
+            </div>
+            <div class="w-full h-40 relative">
+                <canvas id="smokeChart"></canvas>
+            </div>
+        </div>
+
+        <!-- AI PROFESSOR -->
+        <div class="gba-dark-box p-4 relative">
+             <div class="flex items-center gap-3 mb-3 border-b-2 border-[#4c1d95] pb-2">
+                 <div class="text-3xl filter drop-shadow-md">👨‍🔬</div>
+                 <h2 class="font-pixel text-[8px] text-yellow-400 leading-[1.6]">PROF. BIRKS<br>VERHALTENS-LABOR</h2>
+             </div>
+             <div class="bg-[#1a0933] border-2 border-[#7c3aed] p-3 rounded mb-3 shadow-inner">
+                 <p id="ai-output" class="font-pixel text-[7px] text-purple-200 leading-loose min-h-[40px]">"Hallo Trainer! Zeig mir deine POKéDEX Daten, und ich analysiere deine psychologischen Muster."</p>
+             </div>
+             <button onclick="analyzePatterns(); playSound('click');" class="w-full bg-[#7c3aed] hover:bg-[#a855f7] border-b-4 border-[#4c1d95] rounded text-white font-pixel text-[7px] py-3 active:translate-y-1 active:border-b-0 transition-all">
+                 DATEN ANALYSIEREN
+             </button>
+        </div>
+    </div>
+
+    <!-- UNDO TOAST -->
+    <div id="undo-toast" class="fixed top-safe left-4 right-4 z-[50] gba-dark-box !border-4 !border-red-500 p-3 transform -translate-y-40 opacity-0 transition-all duration-300 flex justify-between items-center shadow-[0_0_20px_rgba(239,68,68,0.5)]">
+        <span class="font-pixel text-[7px] text-white leading-[1.5]">TREFFER! (-20 KP)<br><span class="text-red-400">Zigarette geloggt.</span></span>
+        <button onclick="undoSmoke()" class="bg-red-600 border-2 border-red-900 text-white font-pixel text-[6px] px-2 py-2 active:scale-95 shadow-md">RÜCKGÄNGIG</button>
+    </div>
+
+    <!-- BADGE MODAL -->
+    <div id="badge-modal" class="hidden-app fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4">
+        <div class="gba-dialog !border-4 w-full max-w-sm p-5 text-center relative shadow-2xl">
+            <button onclick="closeBadgeInfo()" class="absolute top-2 right-3 font-pixel text-red-500 text-lg hover:scale-110">X</button>
+            <div class="text-5xl mb-3 mt-2 filter drop-shadow-[0_0_10px_gold]" id="badge-modal-icon">🪨</div>
+            <h2 class="font-pixel text-[12px] text-yellow-400 mb-2 border-b-2 border-[#4c1d95] pb-2" id="badge-modal-title">Steinorden</h2>
+            <p class="font-pixel text-[8px] text-purple-300 mb-3" id="badge-modal-time">Ziel: 24 Stunden</p>
+            <div class="bg-[#1a0933] border-2 border-[#7c3aed] p-3 rounded">
+                <p class="font-pixel text-[7px] text-white leading-loose" id="badge-modal-desc">
+                    WHO Effekt: Kohlenmonoxid sinkt auf Normalniveau.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHAMPION MODAL (HALL OF FAME) -->
+    <div id="champion-modal" class="hidden-app fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4">
+        <div class="gba-dialog !bg-[#2e0854] !border-4 !border-yellow-400 w-full max-w-md p-6 text-center relative shadow-[0_0_50px_rgba(250,204,21,0.6)] overflow-hidden">
+            <div class="relative z-10">
+                <h1 class="font-pixel text-yellow-400 text-xl mb-2 drop-shadow-[0_0_10px_gold]">RUHMESHALLE</h1>
+                <h2 class="font-pixel text-purple-200 text-[10px] mb-6 border-b border-yellow-700 pb-3">CHAMPION</h2>
+                
+                <div class="bg-[#1a0933] border-2 border-yellow-500 p-4 rounded mb-5">
+                    <p class="font-pixel text-white text-[8px] mb-4 leading-[1.8]">
+                        Unglaubliche Legende!<br>Du bist ein volles Jahr (365 Tage) rauchfrei! Smog-Mon ist besiegt.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 text-[7px] text-white">
+                        <div class="flex flex-col">
+                            <span class="text-purple-300">ERSPARNIS</span>
+                            <span id="champ-saved" class="text-yellow-400 font-bold mt-1 text-[10px]">€ 0</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-purple-300">NICHT GERAUCHT</span>
+                            <span id="champ-unsmoked" class="text-cyan-400 font-bold mt-1 text-[10px]">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-4 gap-3 mb-6 bg-white/5 p-2 rounded border border-white/10" id="champ-badges">
+                    <!-- Badges injected via JS -->
+                </div>
+                
+                <button onclick="closeChampionModal()" class="bg-yellow-500 hover:bg-yellow-400 text-purple-900 font-pixel text-[8px] px-6 py-3 border-b-4 border-yellow-700 active:translate-y-1 active:border-b-0 transition-all rounded">
+                    URKUNDE SCHLIESSEN
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="view-settings" class="hidden-app fixed inset-0 z-[60] bg-black/90 p-4 pt-safe pb-safe flex flex-col justify-center">
+        <div class="gba-dialog !border-4 p-5">
+            <h1 class="font-pixel text-[11px] text-yellow-400 mb-5 border-b-2 border-[#4c1d95] pb-2">OPTIONEN</h1>
+            <div class="space-y-4 font-pixel text-[7px] text-white leading-[1.8]">
+                <div>
+                    <label class="text-purple-300">PREIS PRO SCHACHTEL (€)</label>
+                    <input type="number" step="0.10" id="set-price" class="w-full bg-[#1a0933] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
+                </div>
+                <div>
+                    <label class="text-purple-300">ZIGARETTEN / SCHACHTEL</label>
+                    <input type="number" id="set-cigs-pack" class="w-full bg-[#1a0933] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
+                </div>
+                <div>
+                    <label class="text-purple-300">ZIGARETTEN / TAG</label>
+                    <input type="number" id="set-cigs-day" class="w-full bg-[#1a0933] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
+                </div>
+                <div>
+                    <label class="text-purple-300 flex justify-between items-center">
+                        GEMINI API KEY
+                        <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-yellow-400 underline text-[6px]">KEY HOLEN</a>
+                    </label>
+                    <input type="password" id="set-api" class="w-full bg-[#1a0933] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm">
+                </div>
+                
+                <div class="pt-2 flex flex-col gap-2">
+                    <button onclick="saveSettings(); playSound('click');" class="w-full bg-[#7c3aed] border-b-4 border-[#4c1d95] rounded text-white py-3 active:translate-y-1 active:border-b-0 transition-all text-[8px]">
+                        SPEICHERN & ZURÜCK
+                    </button>
+                    <button onclick="hardReset()" class="w-full bg-red-600 border-b-4 border-red-900 rounded text-white py-3 active:translate-y-1 active:border-b-0 transition-all text-[8px]">
+                        SPIELSTAND LÖSCHEN
+                    </button>
+                    <button onclick="toggleSettings(); playSound('click');" class="w-full bg-gray-600 border-b-4 border-gray-800 rounded text-white py-3 active:translate-y-1 active:border-b-0 transition-all text-[8px]">
+                        ABBRECHEN
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIC -->
+    <script>
+        const BADGES = [
+            { id: 'badge-1', reqSecs: 86400, name: "Steinorden", icon: "🪨", desc: "WHO: Kohlenmonoxid im Blut sinkt auf Normalniveau. Die Lunge klärt auf.", reqStr: "24 Std" },
+            { id: 'badge-2', reqSecs: 3 * 86400, name: "Knöchelorden", icon: "🥋", desc: "WHO: Bronchien entspannen sich, die Atmung wird merklich leichter. Energielevel steigt.", reqStr: "3 Tage" },
+            { id: 'badge-3', reqSecs: 7 * 86400, name: "Dynamorden", icon: "⚡", desc: "WHO: Geruchs- und Geschmackssinn verbessern sich deutlich. Nerven regenerieren.", reqStr: "7 Tage" },
+            { id: 'badge-4', reqSecs: 14 * 86400, name: "Hitzeorden", icon: "🔥", desc: "WHO: Durchblutung und Lungenfunktion beginnen sich spürbar zu verbessern.", reqStr: "14 Tage" },
+            { id: 'badge-5', reqSecs: 30 * 86400, name: "Balanceorden", icon: "⚖️", desc: "WHO: Husten und Kurzatmigkeit nehmen messbar ab.", reqStr: "1 Monat" },
+            { id: 'badge-6', reqSecs: 90 * 86400, name: "Federorden", icon: "🪶", desc: "WHO: Die Lungenkapazität hat sich um bis zu 30% erhöht.", reqStr: "3 Monate" },
+            { id: 'badge-7', reqSecs: 180 * 86400, name: "Gedankenorden", icon: "🧠", desc: "WHO: Das Infektionsrisiko der Atemwege sinkt massiv ab.", reqStr: "6 Monate" },
+            { id: 'badge-8', reqSecs: 365 * 86400, name: "Champion", icon: "👑", desc: "WHO: Das Risiko für eine koronare Herzkrankheit hat sich halbiert!", reqStr: "1 Jahr" },
+        ];
+
+        let AppState = {
+            smokeLogs: [], 
+            pricePerPack: 10.0,
+            cigsPerPack: 20,
+            cigsPerDay: 20,
+            apiKey: '',
+            xp: 0,
+            hp: 100,
+            lastKnownSmokeFreeSecs: 0,
+            championSeen: false,
+            lastUpdate: Date.now(),
+            startDate: Date.now()
+        };
+
+        let chartMode = 'today';
+        let chartInstance = null;
+        let engineInterval;
+        let breatheInterval;
+        let isBreathing = false;
+        let undoTimeout;
+
+        // ====== AUDIO ENGINE ======
+        let audioCtx;
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                osc.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+                
+                if (type === 'click') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.05);
+                    gainNode.gain.setValueAtTime(0.05, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'damage') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(120, now);
+                    osc.frequency.exponentialRampToValueAtTime(40, now + 0.3);
+                    gainNode.gain.setValueAtTime(0.3, now);
+                    gainNode.gain.linearRampToValueAtTime(0, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'level') {
+                    osc.type = 'square';
+                    const notes = [440, 554, 659, 880];
+                    notes.forEach((freq, i) => { osc.frequency.setValueAtTime(freq, now + i*0.1); });
+                    gainNode.gain.setValueAtTime(0.1, now);
+                    gainNode.gain.linearRampToValueAtTime(0, now + 0.4);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                } else if (type === 'heal') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.linearRampToValueAtTime(800, now + 0.2);
+                    gainNode.gain.setValueAtTime(0.1, now);
+                    gainNode.gain.linearRampToValueAtTime(0, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } else if (type === 'fanfare') {
+                    const notes = [440, 554, 659, 880, 1108, 1318];
+                    notes.forEach((freq, i) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.type = 'square';
+                        o.frequency.value = freq;
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        g.gain.setValueAtTime(0, now + i*0.15);
+                        g.gain.linearRampToValueAtTime(0.1, now + i*0.15 + 0.05);
+                        g.gain.linearRampToValueAtTime(0, now + i*0.15 + 0.5);
+                        o.start(now + i*0.15);
+                        o.stop(now + i*0.15 + 0.5);
+                    });
+                }
+            } catch(e) {}
+        }
+
+        // ================= FLOATING TEXT & ANIMATIONS =================
+        function showFloatingText(text, color) {
+            const fxLayer = document.getElementById('battle-fx-layer');
+            if(!fxLayer) return;
+            const el = document.createElement('div');
+            el.innerText = text;
+            el.className = `absolute font-pixel text-[14px] z-50 pointer-events-none drop-shadow-[0_0_10px_rgba(0,0,0,1)] whitespace-nowrap text-center w-full left-0`;
+            el.style.color = color;
+            el.style.top = '40%';
+            
+            el.animate([
+                { transform: 'translateY(20px) scale(0.5)', opacity: 0 },
+                { transform: 'translateY(0px) scale(1.2)', opacity: 1, offset: 0.2 },
+                { transform: 'translateY(-10px) scale(1.2)', opacity: 1, offset: 0.8 },
+                { transform: 'translateY(-30px) scale(1.5)', opacity: 0 }
+            ], { duration: 3000, easing: 'ease-out' });
+            
+            fxLayer.appendChild(el);
+            setTimeout(() => el.remove(), 3000);
+        }
+
+        function playAttackAnimation(onHit) {
+            const player = document.getElementById('player-sprite');
+            const enemy = document.getElementById('smogmon-svg');
+            const fxLayer = document.getElementById('battle-fx-layer');
+            
+            if(!player || !enemy || !fxLayer) { if(onHit) onHit(); return; }
+            
+            const pRect = player.getBoundingClientRect();
+            const eRect = enemy.getBoundingClientRect();
+            const bRect = fxLayer.getBoundingClientRect();
+            
+            player.classList.remove('idle-breathe');
+            player.animate([
+                { transform: 'translate(0,0) scale(1)' },
+                { transform: 'translate(-20px, 10px) scale(0.9)', offset: 0.3 },
+                { transform: 'translate(30px, -20px) scale(1.1)', offset: 0.6 },
+                { transform: 'translate(0,0) scale(1)' }
+            ], { duration: 500, easing: 'ease-out' });
+
+            setTimeout(() => {
+                const shuriken = document.createElement('div');
+                shuriken.innerHTML = `<svg viewBox="0 0 100 100" class="w-10 h-10 drop-shadow-[0_0_10px_cyan]"><polygon points="50,0 60,40 100,50 60,60 50,100 40,60 0,50 40,40" fill="#22d3ee"/><circle cx="50" cy="50" r="10" fill="#0891b2"/></svg>`;
+                shuriken.className = 'absolute z-50';
+                
+                const startX = (pRect.left + pRect.width/2) - bRect.left - 20;
+                const startY = (pRect.top + pRect.height/2) - bRect.top - 20;
+                const endX = (eRect.left + eRect.width/2) - bRect.left - 20;
+                const endY = (eRect.top + eRect.height/2) - bRect.top - 20;
+                
+                shuriken.style.left = startX + 'px';
+                shuriken.style.top = startY + 'px';
+                fxLayer.appendChild(shuriken);
+                
+                shuriken.animate([
+                    { transform: 'translate(0px, 0px) rotate(0deg) scale(0.5)' },
+                    { transform: `translate(${endX - startX}px, ${endY - startY}px) rotate(1080deg) scale(1.5)` }
+                ], { duration: 350, easing: 'ease-in' }).onfinish = () => {
+                    shuriken.remove();
+                    if(onHit) onHit();
+                };
+            }, 250);
+            
+            setTimeout(() => { player.classList.add('idle-breathe'); }, 500);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initBadgesDOM();
+            loadState();
+            
+            // Check for initial load Smog-Mon hit
+            const now = Date.now();
+            const lastSmokeTime = AppState.smokeLogs.length > 0 ? AppState.smokeLogs[AppState.smokeLogs.length - 1] : AppState.startDate;
+            const currentSmokeFreeSecs = Math.max(0, Math.floor((now - lastSmokeTime) / 1000));
+            
+            if (AppState.lastKnownSmokeFreeSecs !== undefined && currentSmokeFreeSecs > AppState.lastKnownSmokeFreeSecs + 2) {
+                setTimeout(() => {
+                    playAttackAnimation(() => {
+                        const sprite = document.getElementById('smogmon-svg');
+                        if(sprite) {
+                            playSound('damage'); 
+                            sprite.classList.add('anim-smog-hit');
+                            showFloatingText('STARK GEBLIEBEN!', '#4ade80');
+                            setTimeout(() => sprite.classList.remove('anim-smog-hit'), 500);
+                        }
+                    });
+                }, 800);
+            }
+            
+            startEngine();
+            renderChart(chartMode);
+            document.body.addEventListener('click', initAudio, {once: true});
+            
+            setInterval(spawnSpore, 1200);
+        });
+        
+        function spawnSpore() {
+            const container = document.getElementById('smogmon-container');
+            if (!container) return;
+            const now = Date.now();
+            const lastSmokeTime = AppState.smokeLogs.length > 0 ? AppState.smokeLogs[AppState.smokeLogs.length - 1] : AppState.startDate;
+            const smokeFreeSecs = Math.max(0, Math.floor((now - lastSmokeTime) / 1000));
+            const smogMonHpPct = Math.max(0, 100 - ((smokeFreeSecs / (365 * 86400)) * 100));
+            if (smogMonHpPct <= 0) return; // Dead
+            
+            const spore = document.createElement('div');
+            spore.className = 'smog-spore';
+            spore.style.left = '30px';
+            spore.style.top = '30px';
+            spore.style.setProperty('--vx', Math.random() * 2 - 1);
+            spore.style.setProperty('--vy', Math.random() * 2 - 1);
+            container.appendChild(spore);
+            setTimeout(() => spore.remove(), 2000);
+        }
+
+        function formatTimeLeft(secs) {
+            if (secs <= 0) return "ERREICHT!";
+            const d = Math.floor(secs / 86400);
+            const h = Math.floor((secs % 86400) / 3600);
+            const m = Math.floor((secs % 3600) / 60);
+            if (d > 0) return `${d}T ${h}h`;
+            if (h > 0) return `${h}h ${m}m`;
+            return `${m}m ${secs%60}s`;
+        }
+
+        function initBadgesDOM() {
+            const container = document.getElementById('badges-container');
+            container.innerHTML = '';
+            BADGES.forEach((b, i) => {
+                container.innerHTML += `
+                    <div id="badge-box-${i}" class="badge badge-box flex flex-col items-center justify-between p-2 border-2 rounded cursor-pointer hover:bg-[#4c1d95] transition-colors" onclick="showBadgeInfo(${i})">
+                        <span class="badge-icon text-xl mb-1">${b.icon}</span>
+                        <span class="font-pixel text-[5px] text-white mb-1 leading-tight w-full truncate text-center">${b.name}</span>
+                        <div class="w-full bg-[#0f051d] h-1 rounded-sm overflow-hidden mb-1"><div id="badge-prog-${i}" class="h-full bg-yellow-400" style="width:0%"></div></div>
+                        <span id="badge-time-${i}" class="font-pixel text-[4px] text-purple-300">${b.reqStr}</span>
+                    </div>
+                `;
+            });
+        }
+
+        // ================= STATE MANAGEMENT =================
+        function loadState() {
+            const saved = localStorage.getItem('smokeAppV2');
+            if (saved) {
+                AppState = { ...AppState, ...JSON.parse(saved) };
+                if(AppState.cigsPerDay === undefined) AppState.cigsPerDay = 20; 
+                if(AppState.championSeen === undefined) AppState.championSeen = false;
+            } else {
+                saveState();
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('smokeAppV2', JSON.stringify(AppState));
+        }
+
+        function toggleSettings() {
+            const view = document.getElementById('view-settings');
+            if (view.classList.contains('hidden-app')) {
+                document.getElementById('set-price').value = AppState.pricePerPack;
+                document.getElementById('set-cigs-pack').value = AppState.cigsPerPack;
+                document.getElementById('set-cigs-day').value = AppState.cigsPerDay;
+                document.getElementById('set-api').value = AppState.apiKey;
+                view.classList.remove('hidden-app');
+            } else {
+                view.classList.add('hidden-app');
+            }
+        }
+
+        function saveSettings() {
+            AppState.pricePerPack = parseFloat(document.getElementById('set-price').value) || 10.0;
+            AppState.cigsPerPack = parseInt(document.getElementById('set-cigs-pack').value) || 20;
+            AppState.cigsPerDay = parseInt(document.getElementById('set-cigs-day').value) || 20;
+            AppState.apiKey = document.getElementById('set-api').value.trim();
+            saveState();
+            updateDashboard(true);
+            toggleSettings();
+        }
+
+        function hardReset() {
+            playSound('damage');
+            if(confirm('ACHTUNG: Willst du deinen Spielstand wirklich komplett löschen? Alle Orden und Logs gehen verloren.')) {
+                localStorage.removeItem('smokeAppV2');
+                location.reload();
+            }
+        }
+
+        // ================= ENGINE & RPG =================
+        function startEngine() {
+            if(engineInterval) clearInterval(engineInterval);
+            engineInterval = setInterval(() => updateDashboard(false), 1000);
+            updateDashboard(true);
+        }
+
+        function setHpBar(elId, pct) {
+            const el = document.getElementById(elId);
+            if(!el) return;
+            el.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+            el.classList.remove('hp-high', 'hp-med', 'hp-low');
+            if (pct > 50) el.classList.add('hp-high');
+            else if (pct > 20) el.classList.add('hp-med');
+            else el.classList.add('hp-low');
+        }
+
+        function updateArena(badgeCount) {
+            const particles = document.getElementById('battle-particles');
+            if(!particles) return;
+            if(particles.dataset.arena === String(badgeCount)) return;
+            particles.dataset.arena = String(badgeCount);
+            
+            document.getElementById('battle-sky').className = `absolute top-0 w-full h-[55%] sky-${badgeCount}`;
+            document.getElementById('battle-horizon').className = `absolute top-[55%] w-full h-[15%] -translate-y-1/2 hor-${badgeCount}`;
+            document.getElementById('battle-floor').className = `absolute bottom-0 h-[150%] flr-${badgeCount}`;
+            document.getElementById('platform-enemy').className = `absolute bottom-0 w-[110px] h-[30px] rounded-[100%] border border-white/20 shadow-[0_10px_20px_rgba(0,0,0,0.8)] z-0 plat-base plt-${badgeCount}`;
+            document.getElementById('platform-player').className = `absolute bottom-0 w-[130px] h-[35px] rounded-[100%] border border-white/20 shadow-[0_10px_20px_rgba(0,0,0,0.8)] z-0 plat-base plt-${badgeCount}`;
+            
+            particles.innerHTML = '';
+            
+            const countArr = [30, 20, 25, 15, 30, 15, 15, 40, 50];
+            const count = countArr[badgeCount] || 20;
+            
+            if(badgeCount === 0) particles.innerHTML += `<div class="p-swamp-fog"></div>`;
+            if(badgeCount === 2) particles.innerHTML += `<div class="p-dojo-moon"></div>`;
+            
+            for(let i=0; i<count; i++) {
+                const el = document.createElement('div');
+                const del = Math.random() * 5;
+                
+                switch(badgeCount) {
+                    case 0:
+                        if (i < 10) {
+                            el.className = 'p-will-o-wisp';
+                            el.style.left = `${Math.random() * 100}%`;
+                            el.style.top = `${40 + Math.random() * 50}%`;
+                        } else {
+                            el.className = 'p-acid-bubble';
+                            el.style.left = `${Math.random() * 100}%`;
+                            el.style.bottom = `${Math.random() * 30}%`;
+                        }
+                        el.style.animationDelay = `${del}s`;
+                        break;
+                    case 1:
+                        el.className = 'p-crystal-shard';
+                        el.style.left = `${Math.random() * 100}%`;
+                        el.style.top = `${Math.random() * 100}%`;
+                        el.style.animationDelay = `${del}s`;
+                        break;
+                    case 2:
+                        el.className = 'p-sakura';
+                        el.style.left = `${Math.random() * 120}%`;
+                        el.style.top = `-20px`;
+                        el.style.animationDelay = `${del}s`;
+                        break;
+                    case 3:
+                        el.className = 'p-neon-spark';
+                        el.style.left = `${Math.random() * 100}%`;
+                        el.style.top = `${Math.random() * 100}%`;
+                        el.style.animationDelay = `${del}s`;
+                        break;
+                    case 4:
+                        el.className = 'p-ember';
+                        el.style.left = `${Math.random() * 100}%`;
+                        el.style.bottom = `-10px`;
+                        el.style.animationDelay = `${del}s`;
+                        break;
+                    case 5:
+                        el.className = 'p-spirit';
+                        el.style.left = `${Math.random() * 100}%`;
+                        el.style.top = `${Math.random() * 100}%`;
+                        el.style.animationDelay = `${del}s`;
+                        break;
+                    case 6:
+                        el.className = 'p-cloud';
+                        el.style.width = `${50 + Math.random()*100}px`;
+                        el.style.height = `${20 + Math.random()*30}px`;
+                        el.style.top = `${Math.random() * 100}%`;
+                        el.style.left = '100%';
+                        el.style.animationDelay = `${del}s`;
+                        el.style.animationDuration = `${10 + Math.random()*10}s`;
+                        break;
+                    case 7:
+                        if(i < 3) {
+                            el.className = 'p-shooting-star';
+                            el.style.top = `${Math.random() * 50}%`;
+                            el.style.left = '100%';
+                            el.style.animationDelay = `${del * 2}s`;
+                        } else {
+                            el.className = 'p-star';
+                            el.style.left = `${Math.random() * 100}%`;
+                            el.style.top = `${Math.random() * 100}%`;
+                            el.style.animationDelay = `${del}s`;
+                        }
+                        break;
+                    case 8:
+                        if(i < 5) {
+                            el.className = 'p-god-ray';
+                            el.style.left = `${20 * i}%`;
+                            el.style.top = '-50px';
+                            el.style.animationDelay = `${del}s`;
+                        } else {
+                            el.className = 'p-ember'; 
+                            el.style.background = '#fef08a';
+                            el.style.boxShadow = '0 0 10px #facc15';
+                            el.style.left = `${Math.random() * 100}%`;
+                            el.style.bottom = `-10px`;
+                            el.style.animationDelay = `${del}s`;
+                        }
+                        break;
+                }
+                particles.appendChild(el);
+            }
+        }
+
+        function updateDashboard(forceSave) {
+            const now = Date.now();
+            const diffSecs = Math.max(0, (now - AppState.lastUpdate) / 1000);
+            
+            AppState.xp += (diffSecs * (240 / 86400));
+            AppState.hp = Math.min(100, AppState.hp + (diffSecs * (100 / 86400))); 
+            AppState.lastUpdate = now;
+            
+            const lastSmokeTime = AppState.smokeLogs.length > 0 ? AppState.smokeLogs[AppState.smokeLogs.length - 1] : AppState.startDate;
+            const smokeFreeSecs = Math.max(0, Math.floor((now - lastSmokeTime) / 1000));
+            AppState.lastKnownSmokeFreeSecs = smokeFreeSecs; 
+            
+            if (forceSave || Math.random() < 0.05) saveState();
+            
+            // Timer
+            const d = Math.floor(smokeFreeSecs / 86400);
+            const h = Math.floor((smokeFreeSecs % 86400) / 3600);
+            const m = Math.floor((smokeFreeSecs % 3600) / 60);
+            const s = smokeFreeSecs % 60;
+            const pad = num => num.toString().padStart(2, '0');
+            const timerEl = document.getElementById('live-timer');
+            if(timerEl) timerEl.innerText = `${d}T ${pad(h)}H ${pad(m)}M ${pad(s)}S`;
+
+            // Player Level
+            const level = Math.max(1, Math.floor(Math.sqrt(AppState.xp / 10)) + 1);
+            const lvlEl = document.getElementById('player-lvl');
+            if (lvlEl) lvlEl.innerText = `Lv ${level}`;
+            
+            // Player HP
+            setHpBar('player-hp-bar', AppState.hp);
+            const hpValEl = document.getElementById('player-hp-val');
+            if(hpValEl) hpValEl.innerText = `${Math.floor(AppState.hp)}/100`;
+
+            const hpStatusEl = document.getElementById('player-hp-status');
+            if(hpStatusEl) {
+                let statusHtml = "";
+                if(AppState.hp >= 80) statusHtml = `<span class="text-green-500 font-pixel text-[5px]">STATUS: TOPFIT</span>`;
+                else if(AppState.hp >= 30) statusHtml = `<span class="text-yellow-500 font-pixel text-[5px]">STATUS: ANGESCHLAGEN</span>`;
+                else statusHtml = `<span class="text-red-500 font-pixel text-[5px] animate-pulse">STATUS: CRAVING-GEFAHR</span>`;
+                hpStatusEl.innerHTML = statusHtml;
+            }
+
+            // Smog-Mon 1-Year HP
+            const oneYearSecs = 365 * 86400; // 31536000
+            const smogMonHpPct = Math.max(0, 100 - ((smokeFreeSecs / oneYearSecs) * 100));
+            
+            const smogHpVal = document.getElementById('smogmon-hp-val');
+            if(smogHpVal) smogHpVal.innerText = `${smogMonHpPct.toFixed(1)}%`;
+            setHpBar('smogmon-hp-bar', smogMonHpPct);
+            
+            const smogMonSprite = document.getElementById('smogmon-svg');
+            if (smogMonSprite) {
+                if (smogMonHpPct <= 0) {
+                    smogMonSprite.style.opacity = "0";
+                } else if (smogMonHpPct < 25) {
+                    smogMonSprite.style.opacity = "0.3";
+                    smogMonSprite.style.filter = "grayscale(100%) blur(1px)";
+                } else if (smogMonHpPct < 50) {
+                    smogMonSprite.style.opacity = "0.6";
+                    smogMonSprite.style.filter = "grayscale(70%)";
+                } else if (smogMonHpPct < 75) {
+                    smogMonSprite.style.opacity = "0.8";
+                    smogMonSprite.style.filter = "grayscale(30%)";
+                } else {
+                    smogMonSprite.style.opacity = "1";
+                    smogMonSprite.style.filter = "none";
+                }
+            }
+
+            // Finance
+            const cigCost = AppState.pricePerPack / AppState.cigsPerPack;
+            const actualCost = AppState.smokeLogs.length * cigCost; 
+            const dailyCost = AppState.cigsPerDay * cigCost;
+            const gespart = (smokeFreeSecs / 86400) * dailyCost; 
+
+            const costEl = document.getElementById('total-cost');
+            const saveEl = document.getElementById('total-saved');
+            if(costEl) costEl.innerText = `€ ${actualCost.toFixed(2).replace('.', ',')}`;
+            if(saveEl) saveEl.innerText = `€ ${gespart.toFixed(2).replace('.', ',')}`;
+
+            // Badges Update & Arena Logic
+            let unlockedCount = 0;
+            BADGES.forEach((b, i) => {
+                const el = document.getElementById(`badge-box-${i}`);
+                if (el) {
+                    const isUnlocked = smokeFreeSecs >= b.reqSecs;
+                    if (isUnlocked) unlockedCount++;
+                    
+                    if (isUnlocked && !el.classList.contains('unlocked')) {
+                        el.classList.add('unlocked');
+                        playSound('level');
+                        showFloatingText('ORDEN ERHALTEN!', '#facc15');
+                    } else if (!isUnlocked) {
+                        el.classList.remove('unlocked');
+                    }
+                    
+                    const pct = Math.min(100, (smokeFreeSecs / b.reqSecs) * 100);
+                    const progBar = document.getElementById(`badge-prog-${i}`);
+                    if (progBar) progBar.style.width = `${pct}%`;
+                    
+                    const timeEl = document.getElementById(`badge-time-${i}`);
+                    if(timeEl) {
+                        if(isUnlocked) {
+                            timeEl.innerText = "ERREICHT!";
+                            timeEl.classList.add('text-yellow-400');
+                        } else {
+                            timeEl.innerText = formatTimeLeft(b.reqSecs - smokeFreeSecs);
+                            timeEl.classList.remove('text-purple-300');
+                        }
+                    }
+                }
+            });
+            
+            updateArena(unlockedCount);
+
+            // Champion Trigger
+            if (smokeFreeSecs >= oneYearSecs) {
+                document.getElementById('btn-champ').classList.remove('hidden-app');
+                if (!AppState.championSeen) {
+                    showChampionModal(gespart, AppState.cigsPerDay * 365);
+                    AppState.championSeen = true;
+                    saveState();
+                }
+            }
+        }
+
+        // ================= LOGGING =================
+        function logSmoke() {
+            playSound('damage');
+            if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            
+            const playerBox = document.getElementById('player-stats-box');
+            const playerSprite = document.getElementById('player-sprite');
+            
+            if (playerBox) {
+                playerBox.classList.remove('anim-shake');
+                void playerBox.offsetWidth;
+                playerBox.classList.add('anim-shake');
+            }
+            if (playerSprite) {
+                playerSprite.classList.remove('anim-shake');
+                playerSprite.classList.add('gekkouga-hit');
+                void playerSprite.offsetWidth;
+                playerSprite.classList.add('anim-shake');
+                setTimeout(() => playerSprite.classList.remove('gekkouga-hit'), 500);
+            }
+            
+            AppState.smokeLogs.push(Date.now());
+            AppState.hp = Math.max(0, AppState.hp - 20); 
+            AppState.lastKnownSmokeFreeSecs = 0; 
+            
+            saveState();
+            updateDashboard(true);
+            renderChart(chartMode);
+            
+            const toast = document.getElementById('undo-toast');
+            if (toast) {
+                toast.classList.remove('-translate-y-40', 'opacity-0');
+                clearTimeout(undoTimeout);
+                undoTimeout = setTimeout(() => {
+                    toast.classList.add('-translate-y-40', 'opacity-0');
+                }, 5000);
+            }
+        }
+
+        function undoSmoke() {
+            playSound('heal');
+            if (AppState.smokeLogs.length > 0) {
+                AppState.smokeLogs.pop();
+                AppState.hp = Math.min(100, AppState.hp + 20); 
+                saveState();
+                updateDashboard(true);
+                renderChart(chartMode);
+                showFloatingText('HEILUNG!', '#4ade80');
+            }
+            const toast = document.getElementById('undo-toast');
+            if (toast) toast.classList.add('-translate-y-40', 'opacity-0');
+            clearTimeout(undoTimeout);
+        }
+
+        // ================= BADGE MODAL =================
+        function showBadgeInfo(idx) {
+            playSound('click');
+            const b = BADGES[idx];
+            document.getElementById('badge-modal-icon').innerText = b.icon;
+            document.getElementById('badge-modal-title').innerText = b.name;
+            document.getElementById('badge-modal-time').innerText = `ZIEL: ${b.reqStr}`;
+            document.getElementById('badge-modal-desc').innerText = b.desc;
+            document.getElementById('badge-modal').classList.remove('hidden-app');
+        }
+        function closeBadgeInfo() {
+            playSound('click');
+            document.getElementById('badge-modal').classList.add('hidden-app');
+        }
+
+        // ================= CHAMPION MODAL =================
+        function showChampionModal(gespartAmount, unsmokedAmount) {
+            playSound('fanfare');
+            
+            const champBadges = document.getElementById('champ-badges');
+            champBadges.innerHTML = '';
+            BADGES.forEach(b => {
+                champBadges.innerHTML += `
+                    <div class="flex flex-col items-center p-1 bg-yellow-500/20 border border-yellow-500 rounded">
+                        <span class="text-2xl drop-shadow-[0_0_5px_gold]">${b.icon}</span>
+                    </div>
+                `;
+            });
+
+            if(gespartAmount === undefined) {
+                const cigCost = AppState.pricePerPack / AppState.cigsPerPack;
+                gespartAmount = 365 * (AppState.cigsPerDay * cigCost); 
+                unsmokedAmount = AppState.cigsPerDay * 365;
+            }
+
+            document.getElementById('champ-saved').innerText = `€ ${gespartAmount.toFixed(2).replace('.', ',')}`;
+            document.getElementById('champ-unsmoked').innerText = `${Math.floor(unsmokedAmount)}`;
+            
+            document.getElementById('champion-modal').classList.remove('hidden-app');
+        }
+        
+        function closeChampionModal() {
+            playSound('click');
+            document.getElementById('champion-modal').classList.add('hidden-app');
+        }
+
+        // ================= CHART.JS =================
+        function setChartMode(mode) {
+            chartMode = mode;
+            ['today', 'week', 'month'].forEach(m => {
+                const btn = document.getElementById(`btn-chart-${m}`);
+                if(btn) {
+                    if(m === mode) {
+                        btn.classList.add('bg-[#7c3aed]', 'text-white');
+                        btn.classList.remove('bg-[#2e0854]', 'text-purple-300');
+                    } else {
+                        btn.classList.remove('bg-[#7c3aed]', 'text-white');
+                        btn.classList.add('bg-[#2e0854]', 'text-purple-300');
+                    }
+                }
+            });
+            renderChart(mode);
+        }
+
+        function renderChart(period) {
+            const canvas = document.getElementById('smokeChart');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const logs = AppState.smokeLogs;
+            const now = new Date();
+            let labels = [], data = [];
+            
+            if (period === 'today') {
+                labels = Array.from({length: 24}, (_, i) => `${i}h`);
+                data = new Array(24).fill(0);
+                const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+                logs.forEach(ts => { if (ts >= startOfDay) data[new Date(ts).getHours()]++; });
+            } else if (period === 'week') {
+                data = new Array(7).fill(0);
+                for(let i=6; i>=0; i--) labels.push(new Date(now.getTime() - i*86400000).toLocaleDateString('de-DE', {weekday: 'short'}));
+                const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+                logs.forEach(ts => {
+                    const daysAgo = Math.floor((startOfToday - new Date(ts).setHours(0,0,0,0)) / 86400000);
+                    if(daysAgo >= 0 && daysAgo < 7) data[6 - daysAgo]++;
+                });
+            } else if (period === 'month') {
+                labels = ['W-3', 'W-2', 'W-1', 'Aktuell'];
+                data = new Array(4).fill(0);
+                const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+                logs.forEach(ts => {
+                    const daysAgo = Math.floor((startOfToday - new Date(ts).setHours(0,0,0,0)) / 86400000);
+                    if(daysAgo >= 0 && daysAgo < 28) {
+                        const weekIndex = 3 - Math.floor(daysAgo / 7);
+                        if(weekIndex >= 0 && weekIndex < 4) data[weekIndex]++;
+                    }
+                });
+            }
+
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: '#a855f7',
+                        borderWidth: 2,
+                        borderColor: '#facc15',
+                        borderRadius: 0,
+                        barPercentage: 0.8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1, color: '#e5e7eb', font: { family: "'Press Start 2P'", size: 6 } }, grid: { color: 'rgba(255,255,255,0.1)' }, border: {display: false} },
+                        x: { ticks: { color: '#e5e7eb', font: { family: "'Press Start 2P'", size: 5 } }, grid: { display: false }, border: {display: false} }
+                    },
+                    plugins: { legend: { display: false }, tooltip: { bodyFont: {family: "'Press Start 2P'", size:8}, titleFont: {family: "'Press Start 2P'", size:8} } },
+                    animation: { duration: 0 } 
+                }
+            });
+        }
+
+        // ================= CHAKRA BREATHE (4-7-8) =================
+        let breatheSec = 0;
+        let breathePhase = 0; 
+        
+        function toggleBreathe() {
+            playSound('click');
+            if(isBreathing) {
+                isBreathing = false;
+                clearInterval(breatheInterval);
+                document.getElementById('breathe-sec').innerText = "START";
+                document.getElementById('breathe-text').innerText = "TIPPEN";
+                setAuraPhase('off');
+                return;
+            }
+            isBreathing = true;
+            breathePhase = 1;
+            breatheSec = 4;
+            setAuraPhase('inhale');
+            updateBreatheUI();
+            
+            breatheInterval = setInterval(() => {
+                breatheSec--;
+                if(breatheSec <= 0) {
+                    if(breathePhase === 1) { breathePhase = 2; breatheSec = 7; setAuraPhase('hold'); }
+                    else if(breathePhase === 2) { breathePhase = 3; breatheSec = 8; setAuraPhase('exhale'); }
+                    else if(breathePhase === 3) { breathePhase = 1; breatheSec = 4; setAuraPhase('inhale'); }
+                }
+                updateBreatheUI();
+            }, 1000);
+        }
+
+        function setAuraPhase(phase) {
+            const r1 = document.getElementById('aura-ring-1');
+            const r2 = document.getElementById('aura-ring-2');
+            const center = document.getElementById('aura-center');
+            
+            r1.className = 'absolute rounded-full border-dashed chakra-base border-2';
+            r2.className = 'absolute rounded-full border-dotted chakra-base border-2';
+            center.className = 'absolute rounded-full blur-md chakra-base';
+            
+            if(phase === 'off') {
+                r1.classList.add('w-full', 'h-full', 'border-purple-500', 'opacity-30');
+                r2.classList.add('w-3/4', 'h-3/4', 'border-purple-400', 'opacity-50');
+                center.classList.add('w-1/2', 'h-1/2', 'bg-purple-600', 'opacity-20');
+            } else if(phase === 'inhale') {
+                r1.classList.add('chakra-inhale-r1', 'w-3/4', 'h-3/4');
+                r2.classList.add('chakra-inhale-r2', 'w-2/3', 'h-2/3');
+                center.classList.add('chakra-inhale-c', 'w-20', 'h-20');
+                document.getElementById('breathe-text').innerText = "EINATMEN";
+            } else if(phase === 'hold') {
+                r1.classList.add('chakra-hold-r1', 'w-2/3', 'h-2/3');
+                r2.classList.add('chakra-hold-r2', 'w-1/2', 'h-1/2');
+                center.classList.add('chakra-hold-c', 'w-16', 'h-16');
+                document.getElementById('breathe-text').innerText = "HALTEN";
+            } else if(phase === 'exhale') {
+                r1.classList.add('chakra-exhale-r1', 'w-full', 'h-full');
+                r2.classList.add('chakra-exhale-r2', 'w-3/4', 'h-3/4');
+                center.classList.add('chakra-exhale-c', 'w-28', 'h-28');
+                document.getElementById('breathe-text').innerText = "AUSATMEN";
+            }
+        }
+
+        function updateBreatheUI() {
+            document.getElementById('breathe-sec').innerText = breatheSec;
+        }
+
+        // ================= GEMINI AI (PROF BIRK) =================
+        async function analyzePatterns() {
+            if (!AppState.apiKey) {
+                alert("Prof. Birk benötigt den Gemini API-Key (gemini-3.1-flash-lite) in den Einstellungen (OPT-Button).");
+                return;
+            }
+            
+            const logs = AppState.smokeLogs;
+            if (logs.length < 3) {
+                document.getElementById('ai-output').innerText = "Hmm... Der POKéDEX hat noch nicht genug Daten gesammelt. Komm später wieder!";
+                return;
+            }
+
+            document.getElementById('ai-output').innerText = "Verbindung zum Labor wird hergestellt. Analysiere Daten...";
+            
+            const recentLogs = logs.slice(-30).map(ts => {
+                const d = new Date(ts);
+                const days = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+                const pad = num => num.toString().padStart(2, '0');
+                return `${days[d.getDay()]}, ${pad(d.getHours())}:${pad(d.getMinutes())} Uhr`;
+            });
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${AppState.apiKey}`;
+            
+            const sysPrompt = "Du bist Prof. Birk, der berühmte Pokémon-Forscher, arbeitest aber als Verhaltenspsychologe. Analysiere die Zeitstempel der gerauchten Zigaretten des Trainers. Finde Muster (z.B. Morgens, Abends). Gib dem Trainer exakt 2 extrem kurze, präzise und umsetzbare KVT-Tipps zur Gewohnheitsunterbrechung. Sprech ihn als 'Trainer' an. Maximal 3 kurze Sätze insgesamt. Bleib im Pokémon-GBA-Charakter, aber hilf ernsthaft.";
+            const fullPrompt = `${sysPrompt}\n\nZeitstempel der letzten Zigaretten:\n${recentLogs.join('\n')}`;
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: fullPrompt }] }]
+                    })
+                });
+                
+                const data = await res.json();
+                if (data.error) throw new Error(data.error.message);
+                
+                const responseText = data.candidates[0].content.parts[0].text.replace(/\*/g, '');
+                document.getElementById('ai-output').innerText = `"${responseText.trim()}"`;
+                playSound('heal');
+            } catch (e) {
+                console.error("Prof Birk Error:", e);
+                document.getElementById('ai-output').innerText = "Verbindungsabbruch zum Labor! Überprüfe deinen API-Key und dein Internet.";
+            }
+        }
+    </script>
+</body>
+</html>
