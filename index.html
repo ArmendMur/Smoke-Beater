@@ -632,8 +632,8 @@
                 </div>
             </div>
 
-            <!-- 3 Informative Quick Stats Badges -->
-            <div class="grid grid-cols-3 gap-2 mb-3">
+            <!-- 2 Informative Quick Stats Badges -->
+            <div class="grid grid-cols-2 gap-2 mb-3">
                 <div class="pokedex-stat-pill p-2 rounded flex flex-col items-center text-center">
                     <span class="font-pixel text-[5px] text-purple-300 mb-1">HEUTE</span>
                     <span id="stat-count-today" class="font-pixel text-[10px] text-cyan-300">0</span>
@@ -643,11 +643,6 @@
                     <span class="font-pixel text-[5px] text-purple-300 mb-1">GESPART</span>
                     <span id="stat-money-saved" class="font-pixel text-[10px] text-emerald-400">0,00€</span>
                     <span class="font-pixel text-[4px] text-purple-400 mt-0.5">ERSPARNIS</span>
-                </div>
-                <div class="pokedex-stat-pill p-2 rounded flex flex-col items-center text-center">
-                    <span class="font-pixel text-[5px] text-purple-300 mb-1">NICHT GERAUCHT</span>
-                    <span id="stat-avoided-count" class="font-pixel text-[10px] text-amber-300">0</span>
-                    <span class="font-pixel text-[4px] text-purple-400 mt-0.5">VERMIEDEN</span>
                 </div>
             </div>
 
@@ -702,7 +697,7 @@
 
     <!-- UNDO TOAST -->
     <div id="undo-toast" class="fixed top-safe left-4 right-4 z-[50] gba-dark-box !border-4 !border-red-500 p-3 transform -translate-y-40 opacity-0 transition-all duration-300 flex justify-between items-center shadow-[0_0_20px_rgba(239,68,68,0.5)]">
-        <span class="font-pixel text-[7px] text-white leading-[1.5]">TREFFER! (-20 KP)<br><span class="text-red-400">Zigarette geloggt.</span></span>
+        <span class="font-pixel text-[7px] text-white leading-[1.5]">TREFFER KASSIERT!<br><span class="text-red-400">Zigarette geloggt.</span></span>
         <button onclick="undoSmoke()" class="bg-red-600 border-2 border-red-900 text-white font-pixel text-[6px] px-2 py-2 active:scale-95 shadow-md">RÜCKGÄNGIG</button>
     </div>
 
@@ -880,6 +875,20 @@
 
         // ====== AUTHENTIC 8-BIT / GBA POKEMON RETRO AUDIO ENGINE ======
         let audioCtx = null;
+        let activeBreatheNodes = [];
+
+        function stopBreatheAudio() {
+            if (activeBreatheNodes && activeBreatheNodes.length > 0) {
+                activeBreatheNodes.forEach(node => {
+                    try {
+                        if (node.stop) node.stop();
+                        if (node.disconnect) node.disconnect();
+                    } catch(e) {}
+                });
+                activeBreatheNodes = [];
+            }
+        }
+
         function getAudioContext() {
             if (!audioCtx) {
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -1027,6 +1036,7 @@
                         osc.stop(now + idx * 0.08 + 0.15);
                     });
                 } else if (type === 'breathe_long_in') {
+                    stopBreatheAudio();
                     // 4s Inhale: Warm, pure ambient swell (Acoustic major chord rising gently)
                     const freqs = [261.63, 329.63, 392.00, 523.25]; // C Major
                     freqs.forEach((f, i) => {
@@ -1042,8 +1052,10 @@
                         gain.connect(ctx.destination);
                         osc.start(now);
                         osc.stop(now + 4.0);
+                        activeBreatheNodes.push(osc, gain);
                     });
                 } else if (type === 'breathe_long_hold') {
+                    stopBreatheAudio();
                     // 7s Hold: Deep, soothing, perfectly smooth meditation pad (Pure crystal stillness)
                     const freqs = [220.00, 329.63, 440.00, 659.25]; // Warm A minor/E resonance
                     freqs.forEach((f, i) => {
@@ -1059,8 +1071,10 @@
                         gain.connect(ctx.destination);
                         osc.start(now);
                         osc.stop(now + 7.0);
+                        activeBreatheNodes.push(osc, gain);
                     });
                 } else if (type === 'breathe_long_out') {
+                    stopBreatheAudio();
                     // 8s Exhale: Gentle, deep descending harmonic release (Complete relaxation)
                     const freqs = [523.25, 392.00, 329.63, 261.63, 130.81]; // C major descending to low warm bass
                     freqs.forEach((f, i) => {
@@ -1076,6 +1090,7 @@
                         gain.connect(ctx.destination);
                         osc.start(now);
                         osc.stop(now + 8.0);
+                        activeBreatheNodes.push(osc, gain);
                     });
                 } else if (type === 'fanfare') {
                     const notes = [523.25, 523.25, 523.25, 659.25, 783.99, 1046.50];
@@ -1863,7 +1878,7 @@
                     playerSprite.classList.add('anim-shake');
                     setTimeout(() => playerSprite.classList.remove('gekkouga-hit'), 500);
                 }
-                showFloatingText('SMOG-TREFFER! (-20 KP)', '#ef4444');
+                showFloatingText('SMOG-TREFFER!', '#ef4444');
             });
             
             AppState.smokeLogs.push(Date.now());
@@ -2158,9 +2173,10 @@
                 isBreathing = false;
                 clearInterval(breatheInterval);
                 if (breatheRafId) cancelAnimationFrame(breatheRafId);
+                stopBreatheAudio();
                 document.getElementById('breathe-sec').innerText = "START";
                 document.getElementById('breathe-text').innerText = "TIPPEN";
-                document.getElementById('breathe-desc').innerText = "Tippe auf das Shuriken, wenn dich Rauch-Craving überkommt.";
+                document.getElementById('breathe-desc').innerText = "Tippe auf das Shuriken bei Rauchdrang.";
                 setBreathePhase('off');
                 return;
             }
@@ -2210,6 +2226,7 @@
             if(!circle) return;
 
             if(phase === 'off') {
+                stopBreatheAudio();
                 shurikenSpeed = 0;
                 targetShurikenScale = 1.0;
                 shurikenScale = 1.0;
@@ -2230,7 +2247,7 @@
                 circle.style.boxShadow = '0 0 30px rgba(56, 189, 248, 0.85)';
 
                 document.getElementById('breathe-text').innerText = "EINATMEN";
-                if(desc) desc.innerText = "Tief durch die Nase einatmen... Das Shuriken dreht sich im Uhrzeigersinn schneller.";
+                if(desc) desc.innerText = "Tief durch die Nase einatmen...";
             } else if(phase === 'hold') {
                 // Halten (7s): Knackiges Smaragdgrün – Farbe schaltet sofort in 0.4s um
                 playSound('breathe_long_hold');
@@ -2241,7 +2258,7 @@
                 circle.style.boxShadow = '0 0 35px rgba(16, 185, 129, 0.9)';
 
                 document.getElementById('breathe-text').innerText = "HALTEN";
-                if(desc) desc.innerText = "Luft anhalten... Volle Ruhe und Konzentration auf dein Ziel.";
+                if(desc) desc.innerText = "Luft anhalten und fokussieren...";
             } else if(phase === 'exhale') {
                 // Ausatmen (8s): Strahlendes Neon-Cyan/Aqua – Farbe schaltet sofort in 0.5s um, Skalierung läuft 8s
                 playSound('breathe_long_out');
@@ -2252,7 +2269,7 @@
                 circle.style.boxShadow = '0 0 50px rgba(0, 240, 255, 0.95)';
 
                 document.getElementById('breathe-text').innerText = "AUSATMEN";
-                if(desc) desc.innerText = "Langsam durch den Mund ausatmen... Das Shuriken kehrt die Drehung sanft um.";
+                if(desc) desc.innerText = "Langsam durch den Mund ausatmen...";
             }
         }
 
