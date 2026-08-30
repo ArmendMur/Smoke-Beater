@@ -85,6 +85,39 @@
             pointer-events: none;
         }
 
+        /* Pokemon Battle HP Box Pointed Tips (Classic Speech/Target Beaks) */
+        .poke-box-enemy {
+            border-bottom-right-radius: 0px !important;
+        }
+        .poke-box-enemy::before {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: 10px;
+            width: 0;
+            height: 0;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 10px solid #000;
+            z-index: 35;
+        }
+
+        .poke-box-player {
+            border-bottom-left-radius: 0px !important;
+        }
+        .poke-box-player::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 10px;
+            width: 0;
+            height: 0;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-right: 10px solid #000;
+            z-index: 35;
+        }
+
         /* HP Bars */
         .hp-bar-bg { background: #111; border: 2px solid #555; border-radius: 4px; padding: 1px; }
         .hp-bar-fill { height: 100%; transition: width 0.4s ease-out, background-color 0.4s ease; border-radius: 1px; }
@@ -319,9 +352,9 @@
     <div id="view-dashboard" class="flex-1 flex flex-col p-3 space-y-4 overflow-y-auto pb-8 z-10 w-full max-w-[600px] mx-auto">
         
         <header class="flex justify-between items-center px-1">
-            <div class="flex items-center gap-2">
-                <span class="text-cyan-400 text-lg">⚔️</span>
-                <h1 class="font-pixel text-[10px] text-cyan-300 text-shadow-sm tracking-wider">SMOKE-BEATER</h1>
+            <div class="flex flex-col">
+                <span class="font-pixel text-[6px] text-cyan-400 mb-0.5">RAUCHFREI SEIT:</span>
+                <span id="live-timer" class="font-pixel text-[10px] text-cyan-200 tracking-wider">0T 00H 00M 00S</span>
             </div>
             <button onclick="toggleSettings(); playSound('click');" class="gba-dialog !border-2 p-2 !bg-[#1f0b3d] hover:!bg-[#3b1270] shadow-none cursor-pointer">
                 <span class="font-pixel text-[8px] text-cyan-300">OPT</span>
@@ -341,8 +374,8 @@
                 <div id="battle-particles" class="absolute inset-0" data-arena="-1"></div>
             </div>
 
-            <!-- UI: Enemy HP (Top Left) -->
-            <div class="absolute top-2 left-2 w-[150px] gba-dialog p-2 !border-2 shadow-md !bg-[#130628] z-20">
+            <!-- UI: Enemy HP (Top Left - opponent of enemy sprite on top right) -->
+            <div class="absolute top-3 left-3 w-[150px] gba-dialog poke-box-enemy p-2 !border-2 shadow-md !bg-[#130628] z-20">
                 <div class="flex justify-between items-end mb-1 border-b border-[#4c1d95] pb-1">
                     <span class="font-pixel text-[8px] uppercase font-bold text-white">Smog-Mon</span>
                     <span class="font-pixel text-[6px] text-white">Lv 99</span>
@@ -357,7 +390,7 @@
             </div>
 
             <!-- ENEMY SPRITE & PLATFORM (Top Right) -->
-            <div class="absolute right-[5%] top-[15%] w-[100px] h-[100px] z-10 flex flex-col items-center justify-end">
+            <div class="absolute right-[5%] top-[12%] w-[100px] h-[100px] z-10 flex flex-col items-center justify-end">
                 <div class="absolute bottom-0 w-[110px] h-[30px] rounded-[100%] border border-white/20 shadow-[0_10px_20px_rgba(0,0,0,0.8)] z-0 plat-base plt-0" id="platform-enemy"></div>
                 <div class="absolute bottom-1 w-[50px] h-[10px] bg-black/60 rounded-[100%] blur-[2px] z-10"></div>
                 <div id="smogmon-container" class="relative z-20 w-16 h-16 mb-2 flex items-center justify-center">
@@ -393,8 +426,15 @@
                 </div>
             </div>
 
-            <!-- UI: Player HP (Bottom Right) -->
-            <div class="absolute bottom-2 right-2 w-[160px] gba-dialog p-2 !border-2 shadow-md !bg-[#130628] z-20" id="player-stats-box">
+            <!-- PLAYER SPRITE & PLATFORM (Bottom Left) -->
+            <div class="absolute left-[5%] bottom-[10%] w-[120px] h-[120px] z-10 flex flex-col items-center justify-end">
+                <div class="absolute bottom-0 w-[130px] h-[35px] rounded-[100%] border border-white/20 shadow-[0_10px_20px_rgba(0,0,0,0.8)] z-0 plat-base plt-0" id="platform-player"></div>
+                <div class="absolute bottom-2 w-[60px] h-[12px] bg-black/70 rounded-[100%] blur-[2px] z-10"></div>
+                <img src="gekkouga.png" alt="Ash-Quajutsu" class="relative z-20 w-24 h-24 mb-1 object-contain idle-breathe transition-transform drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)]" id="player-sprite">
+            </div>
+
+            <!-- UI: Player HP (Bottom Right - opposite Ash-Quajutsu sprite on bottom left) -->
+            <div class="absolute bottom-3 right-3 w-[160px] gba-dialog poke-box-player p-2 !border-2 shadow-md !bg-[#130628] z-20" id="player-stats-box">
                 <div class="flex justify-between items-end mb-1 border-b border-[#4c1d95] pb-1">
                     <span class="font-pixel text-[8px] uppercase font-bold text-white">Ash-Quajutsu</span>
                     <span id="player-lvl" class="font-pixel text-[6px] text-white">Lv 1</span>
@@ -403,27 +443,13 @@
                     <span class="font-pixel text-[6px] text-white font-bold">KP</span>
                     <span id="player-hp-val" class="font-pixel text-[6px] text-white">100/100</span>
                 </div>
-                <div class="flex-1 hp-bar-bg h-2 mb-1.5">
+                <div class="flex-1 hp-bar-bg h-2">
                     <div id="player-hp-bar" class="hp-bar-fill hp-high" style="width:100%"></div>
                 </div>
-                <div id="player-hp-status" class="mb-0.5"></div>
-            </div>
-
-            <!-- PLAYER SPRITE & PLATFORM (Bottom Left) -->
-            <div class="absolute left-[5%] bottom-[10%] w-[120px] h-[120px] z-10 flex flex-col items-center justify-end">
-                <div class="absolute bottom-0 w-[130px] h-[35px] rounded-[100%] border border-white/20 shadow-[0_10px_20px_rgba(0,0,0,0.8)] z-0 plat-base plt-0" id="platform-player"></div>
-                <div class="absolute bottom-2 w-[60px] h-[12px] bg-black/70 rounded-[100%] blur-[2px] z-10"></div>
-                <img src="gekkouga.png" alt="Ash-Quajutsu" class="relative z-20 w-24 h-24 mb-1 object-contain idle-breathe transition-transform drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)]" id="player-sprite">
             </div>
 
             <!-- FLOATING TEXT OVERLAY -->
             <div id="battle-fx-layer" class="absolute inset-0 z-50 pointer-events-none"></div>
-            
-            <!-- LIVE TIMER -->
-            <div class="absolute bottom-2 left-2 z-20 p-1 bg-black/75 rounded border border-cyan-500/40">
-                 <p class="font-pixel text-[5px] text-cyan-300 mb-1">RAUCHFREI SEIT:</p>
-                 <p id="live-timer" class="font-pixel text-[8px] text-cyan-200 drop-shadow-md">0T 00H 00M 00S</p>
-            </div>
         </div>
 
         <!-- ACTION MENU & FINANCES -->
@@ -1371,9 +1397,22 @@
         function initBadgesDOM() {
             const container = document.getElementById('badges-container');
             container.innerHTML = '';
+            const now = Date.now();
+            const lastSmokeTime = AppState.smokeLogs.length > 0 ? AppState.smokeLogs[AppState.smokeLogs.length - 1] : AppState.startDate;
+            const smokeFreeSecs = Math.max(0, Math.floor((now - lastSmokeTime) / 1000));
+
             BADGES.forEach((b, i) => {
+                const isCurrentlyActive = smokeFreeSecs >= b.reqSecs;
+                const hadInPast = AppState.maxSmokeFreeSecsReached >= b.reqSecs;
+                let badgeClasses = "badge badge-box flex flex-col items-center justify-between p-2 border-2 rounded cursor-pointer hover:bg-[#3b1270] transition-colors";
+                if (isCurrentlyActive) {
+                    badgeClasses += " unlocked";
+                } else if (hadInPast) {
+                    badgeClasses += " had-before";
+                }
+
                 container.innerHTML += `
-                    <div id="badge-box-${i}" class="badge badge-box flex flex-col items-center justify-between p-2 border-2 rounded cursor-pointer hover:bg-[#3b1270] transition-colors" onclick="showBadgeInfo(${i})">
+                    <div id="badge-box-${i}" class="${badgeClasses}" onclick="showBadgeInfo(${i})">
                         <div class="flex items-center justify-between w-full">
                             <span id="badge-star-${i}" class="font-pixel text-[6px] text-cyan-400 invisible" title="Bereits zuvor schon freigeschaltet!">⭐</span>
                             <span class="badge-icon text-xl mb-1">${b.icon}</span>
@@ -1598,15 +1637,6 @@
             setHpBar('player-hp-bar', AppState.hp);
             const hpValEl = document.getElementById('player-hp-val');
             if(hpValEl) hpValEl.innerText = `${Math.floor(AppState.hp)}/100`;
-
-            const hpStatusEl = document.getElementById('player-hp-status');
-            if(hpStatusEl) {
-                let statusHtml = "";
-                if(AppState.hp >= 50) statusHtml = `<span class="text-emerald-400 font-pixel text-[5px]">STATUS: TOPFIT</span>`;
-                else if(AppState.hp >= 20) statusHtml = `<span class="text-amber-400 font-pixel text-[5px]">STATUS: ANGESCHLAGEN</span>`;
-                else statusHtml = `<span class="text-red-400 font-pixel text-[5px] animate-pulse">STATUS: CRAVING-GEFAHR</span>`;
-                hpStatusEl.innerHTML = statusHtml;
-            }
 
             // Smog-Mon 1-Year HP
             const oneYearSecs = 365 * 86400; // 31536000
