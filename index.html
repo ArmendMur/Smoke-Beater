@@ -1942,20 +1942,35 @@
             const smokeFreeDays = Math.floor(smokeFreeSecs / 86400);
             const smokeFreeHours = Math.floor((smokeFreeSecs % 86400) / 3600);
 
-            const sysPrompt = `Du bist Professor Eich aus Pokémon, aber spezialisiert als wissenschaftlicher Verhaltenspsychologe & Suchttherapeut für Raucherentwöhnung. 
-Kontext des Spielers:
-- Er ist seit ${smokeFreeDays} Tagen und ${smokeFreeHours} Stunden rauchfrei.
-- HP: ${Math.floor(AppState.hp)}/100 (Quajutsu).
-- Bisher geraucht geloggt: ${AppState.smokeLogs.length} Zigaretten.
+            const sysInstruction = `Du bist Professor Eich in deiner Rolle als wissenschaftlich fundierter Verhaltenspsychologe und Suchttherapeut für Raucherentwöhnung.
+WICHTIGE ANWEISUNGEN:
+- Vermeide übertriebene, kitschige Pokémon-Phrasen ("Los Pikachu", "Wähle deine Attacke", etc.).
+- Sprich den Nutzer respektvoll, empathisch, direkt und auf Augenhöhe an.
+- Gehe direkt und präzise auf das ein, was der Nutzer in seiner Nachricht beschreibt (z.B. Stress auf der Arbeit, Langeweile, Geselligkeit, Gewohnheit nach dem Essen).
+- Gib echte, psychologisch fundierte und sofort anwendbare Strategien (Kognitive Verhaltenstherapie, Urge Surfing, Dopamin-Regulation, Reiz-Reaktions-Entkopplung, 4-A-Regel).
+- Halte deine Antworten prägnant, klar strukturiert und maximal 3-4 Sätze lang.
 
-Antworte dem Trainer auf seine Nachricht mit einer freundlichen, motivierenden Pokémon-Professor-Persönlichkeit ("Trainer!").
-Gib ihm sofort umsetzbare, konkrete psychologische Tipps (Kognitive Verhaltenstherapie, Achtsamkeit, Craving-Surfing, Ablenkung).
-Antworte prägnant in maximal 2-3 kurzen Sätzen. Bleibe authentisch im Retro-GBA Pokémon-Stil.`;
+Nutzer-Kontext:
+- Rauchfrei seit: ${smokeFreeDays} Tag(en) und ${smokeFreeHours} Stunde(n).
+- Bisherige Rückfälle/geloggte Zigaretten: ${AppState.smokeLogs.length}.`;
 
-            // Build dialog conversation history for Gemini
-            const contents = [
-                { role: 'user', parts: [{ text: `${sysPrompt}\n\nTrainer sagt: ${userText}` }] }
-            ];
+            // Build full multi-turn dialogue history for Gemini API
+            const contents = [];
+            
+            // Add system prompt context as first user message or system
+            const recentHistory = AppState.chatHistory.slice(-8); // Last 8 messages
+            
+            recentHistory.forEach((msg, idx) => {
+                if (msg.sender === 'user') {
+                    if (idx === 0) {
+                        contents.push({ role: 'user', parts: [{ text: `${sysInstruction}\n\nNutzer: ${msg.text}` }] });
+                    } else {
+                        contents.push({ role: 'user', parts: [{ text: msg.text }] });
+                    }
+                } else if (msg.sender === 'eich') {
+                    contents.push({ role: 'model', parts: [{ text: msg.text.replace(/^"|"$/g, '') }] });
+                }
+            });
 
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${AppState.apiKey}`;
 
@@ -1973,8 +1988,8 @@ Antworte prägnant in maximal 2-3 kurzen Sätzen. Bleibe authentisch im Retro-GB
                 const loadEl = document.getElementById('eich-loading');
                 if (loadEl) loadEl.remove();
 
-                AppState.chatHistory.push({ sender: 'eich', text: `"${responseText}"` });
-                if (AppState.chatHistory.length > 10) AppState.chatHistory = AppState.chatHistory.slice(-10);
+                AppState.chatHistory.push({ sender: 'eich', text: `${responseText}` });
+                if (AppState.chatHistory.length > 12) AppState.chatHistory = AppState.chatHistory.slice(-12);
                 saveState();
                 renderChatHistory();
                 playSound('heal');
@@ -1982,7 +1997,7 @@ Antworte prägnant in maximal 2-3 kurzen Sätzen. Bleibe authentisch im Retro-GB
                 console.error("Eich Chat Error:", err);
                 const loadEl = document.getElementById('eich-loading');
                 if (loadEl) loadEl.remove();
-                AppState.chatHistory.push({ sender: 'eich', text: "Fehler beim Laborfunk! Prüfe deinen API-Key in den OPT-Einstellungen." });
+                AppState.chatHistory.push({ sender: 'eich', text: "Fehler beim Verbindungsaufbau zum Labor! Bitte prüfe deinen API-Key in den Einstellungen (OPT)." });
                 renderChatHistory();
             }
         }
@@ -1996,7 +2011,7 @@ Antworte prägnant in maximal 2-3 kurzen Sätzen. Bleibe authentisch im Retro-GB
             const logs = AppState.smokeLogs;
             if (logs.length < 3) {
                 if (!AppState.chatHistory) AppState.chatHistory = [];
-                AppState.chatHistory.push({ sender: 'eich', text: "Hmm... Der POKéDEX hat noch nicht genug Daten gesammelt. Bleib stark und komm später wieder!" });
+                AppState.chatHistory.push({ sender: 'eich', text: "Ich benötige mindestens 3 geloggte Zeitpunkte im Protokoll, um ein klares Verhaltensmuster zu erkennen." });
                 renderChatHistory();
                 return;
             }
@@ -2004,7 +2019,7 @@ Antworte prägnant in maximal 2-3 kurzen Sätzen. Bleibe authentisch im Retro-GB
             const chatBox = document.getElementById('ai-chat-box');
             const loadingMsg = document.createElement('div');
             loadingMsg.id = 'eich-loading';
-            loadingMsg.innerHTML = `<span class="font-pixel text-[6px] text-cyan-400 block">PROF. EICH:</span><p class="font-pixel text-[7px] text-cyan-200 animate-pulse">Analysiere POKéDEX Zeitstempel im Labor...</p>`;
+            loadingMsg.innerHTML = `<span class="font-pixel text-[6px] text-cyan-400 block">PROF. EICH:</span><p class="font-pixel text-[7px] text-cyan-200 animate-pulse">Analysiere Zeitstempel und Gewohnheitsmuster im Labor...</p>`;
             chatBox.appendChild(loadingMsg);
             chatBox.scrollTop = chatBox.scrollHeight;
             
@@ -2017,7 +2032,11 @@ Antworte prägnant in maximal 2-3 kurzen Sätzen. Bleibe authentisch im Retro-GB
 
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${AppState.apiKey}`;
             
-            const sysPrompt = "Du bist Prof. Eich, der berühmte Pokémon-Forscher und Verhaltenspsychologe. Analysiere die Zeitstempel der gerauchten Zigaretten des Trainers. Finde Muster (z.B. Morgens, Abends). Gib dem Trainer exakt 2 extrem kurze, präzise und umsetzbare KVT-Tipps zur Gewohnheitsunterbrechung. Sprech ihn als 'Trainer' an. Maximal 3 kurze Sätze insgesamt. Bleib im Pokémon-GBA-Charakter, aber hilf ernsthaft.";
+            const sysPrompt = `Du bist Professor Eich als seriöser Verhaltensforscher und Suchttherapeut.
+Analysiere die genauen Zeitstempel der gerauchten Zigaretten des Nutzers.
+Identifiziere das primäre Muster (z.B. Morgen-Routine, Nachmittagstief, Abend-Stress).
+Gib dem Nutzer 2 konkrete, psychologische Strategien zur Gewohnheitsunterbrechung.
+Verzichte auf alberne Pokémon-Floskeln. Maximal 3-4 präzise Sätze insgesamt.`;
             const fullPrompt = `${sysPrompt}\n\nZeitstempel der letzten Zigaretten:\n${recentLogs.join('\n')}`;
 
             try {
