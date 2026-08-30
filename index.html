@@ -2045,10 +2045,8 @@
 
             const elToday = document.getElementById('stat-count-today');
             const elSaved = document.getElementById('stat-money-saved');
-            const elAvoided = document.getElementById('stat-avoided-count');
             if (elToday) elToday.innerText = todayCount;
             if (elSaved) elSaved.innerText = `${savedMoney.toFixed(2).replace('.', ',')}€`;
-            if (elAvoided) elAvoided.innerText = avoidedCount;
 
             if (chartInstance) chartInstance.destroy();
             
