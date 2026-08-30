@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0f051d">
+    <meta name="apple-mobile-web-app-title" content="SmokeBeater">
+    <meta name="theme-color" content="#0b0318">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="gekkouga.png">
     <title>Smoke-Beater</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚬</text></svg>">
     
@@ -18,13 +21,15 @@
     
     <style>
         :root {
-            --magi-bg: #0f051d;
-            --magi-card: #2e0854;
-            --magi-card-dark: #1a0933;
-            --magi-accent: #7c3aed;
-            --magi-accent-light: #a855f7;
-            --magi-gold: #facc15;
-            --magi-gold-dark: #eab308;
+            --magi-bg: #0b0318;
+            --magi-card: #1f0b3d;
+            --magi-card-dark: #130628;
+            --magi-accent: #8b5cf6;
+            --magi-accent-light: #a78bfa;
+            --magi-cyan: #06b6d4;
+            --magi-cyan-light: #38bdf8;
+            --magi-neon-blue: #00f0ff;
+            --magi-emerald: #10b981;
         }
         
         body {
@@ -70,16 +75,17 @@
             content: '';
             position: absolute;
             top: 2px; left: 2px; right: 2px; bottom: 2px;
-            border: 2px solid rgba(76, 29, 149, 0.4);
+            border: 2px solid rgba(139, 92, 246, 0.4);
             pointer-events: none;
         }
 
         /* HP Bars */
         .hp-bar-bg { background: #111; border: 2px solid #555; border-radius: 4px; padding: 1px; }
-        .hp-bar-fill { height: 100%; transition: width 0.3s, background-color 0.3s; border-radius: 1px; }
-        .hp-high { background: #4ade80; box-shadow: inset 0 -2px 0 #16a34a; }
-        .hp-med { background: #facc15; box-shadow: inset 0 -2px 0 #ca8a04; }
-        .hp-low { background: #ef4444; box-shadow: inset 0 -2px 0 #b91c1c; }
+        .hp-bar-fill { height: 100%; transition: width 0.4s ease-out, background-color 0.4s ease; border-radius: 1px; }
+        .hp-high { background: #10b981; box-shadow: inset 0 -2px 0 #059669, 0 0 6px rgba(16,185,129,0.5); }
+        .hp-med { background: #f59e0b; box-shadow: inset 0 -2px 0 #d97706, 0 0 6px rgba(245,158,11,0.5); }
+        .hp-low { background: #ef4444; box-shadow: inset 0 -2px 0 #b91c1c, 0 0 8px rgba(239,68,68,0.7); animation: hp-crit-pulse 1s infinite alternate ease-in-out; }
+        @keyframes hp-crit-pulse { 0% { opacity: 0.8; } 100% { opacity: 1; filter: brightness(1.2); } }
 
         /* ========================================================
            BATTLE ARENA: 4-LAYER 3D PERSPECTIVE SYSTEM
@@ -108,8 +114,8 @@
         /* BIOME: 3 CYBER */
         .sky-3 { background: #000; }
         .hor-3 { background: linear-gradient(to top, #4c1d95, transparent); }
-        .flr-3 { background: linear-gradient(transparent 95%, #c084fc 100%), linear-gradient(90deg, transparent 95%, #c084fc 100%); background-size: 30px 30px; background-color: #000; border-top: 2px solid #a855f7; }
-        .plt-3 { background: radial-gradient(ellipse at center, #a855f7 0%, #000 80%); }
+        .flr-3 { background: linear-gradient(transparent 95%, #06b6d4 100%), linear-gradient(90deg, transparent 95%, #06b6d4 100%); background-size: 30px 30px; background-color: #000; border-top: 2px solid #38bdf8; }
+        .plt-3 { background: radial-gradient(ellipse at center, #06b6d4 0%, #000 80%); }
 
         /* BIOME: 4 VOLCANO */
         .sky-4 { background: linear-gradient(to top, #7f1d1d, #1a0933); }
@@ -124,36 +130,36 @@
         .plt-5 { background: radial-gradient(ellipse at center, #9333ea 0%, #2e0854 80%); }
 
         /* BIOME: 6 SKY */
-        .sky-6 { background: linear-gradient(to bottom, #1e1b4b, #6d28d9); }
-        .hor-6 { background: linear-gradient(to top, #c084fc, transparent); }
-        .flr-6 { background: linear-gradient(180deg, #ddd6fe, #8b5cf6); border-top: 3px solid #fff; }
-        .plt-6 { background: radial-gradient(ellipse at center, #c084fc 0%, #6d28d9 80%); }
+        .sky-6 { background: linear-gradient(to bottom, #1e1b4b, #0284c7); }
+        .hor-6 { background: linear-gradient(to top, #38bdf8, transparent); }
+        .flr-6 { background: linear-gradient(180deg, #bae6fd, #0284c7); border-top: 3px solid #fff; }
+        .plt-6 { background: radial-gradient(ellipse at center, #38bdf8 0%, #0369a1 80%); }
 
         /* BIOME: 7 COSMOS */
         .sky-7 { background: #000; }
         .hor-7 { background: linear-gradient(to top, #3b0764, transparent); }
-        .flr-7 { background: radial-gradient(ellipse at top, #1e1b4b, #000); border-top: 1px solid #6d28d9; }
-        .plt-7 { background: radial-gradient(ellipse at center, #6d28d9 0%, #000 80%); }
+        .flr-7 { background: radial-gradient(ellipse at top, #1e1b4b, #000); border-top: 1px solid #06b6d4; }
+        .plt-7 { background: radial-gradient(ellipse at center, #06b6d4 0%, #000 80%); }
 
         /* BIOME: 8 CHAMPION */
-        .sky-8 { background: radial-gradient(circle at top, #facc15 0%, #7c3aed 50%, #0f051d 100%); }
-        .hor-8 { background: linear-gradient(to top, #eab308, transparent); }
-        .flr-8 { background: linear-gradient(180deg, #fef08a, #ca8a04); border-top: 4px solid #fff; }
-        .plt-8 { background: radial-gradient(ellipse at center, #fef08a 0%, #ca8a04 80%); }
+        .sky-8 { background: radial-gradient(circle at top, #38bdf8 0%, #7c3aed 50%, #0f051d 100%); }
+        .hor-8 { background: linear-gradient(to top, #06b6d4, transparent); }
+        .flr-8 { background: linear-gradient(180deg, #a5f3fc, #0891b2); border-top: 4px solid #fff; }
+        .plt-8 { background: radial-gradient(ellipse at center, #a5f3fc 0%, #0891b2 80%); }
 
         /* SOLID PARTICLES (HIGH OPACITY, VISIBLE RETRO FEEL) */
         .p-swamp-fog { position: absolute; width: 100%; height: 35%; bottom: 0; background: rgba(16,185,129,0.7); filter: blur(5px); animation: p-drift 10s infinite alternate linear; }
         .p-acid-bubble { position: absolute; width: 14px; height: 14px; border-radius: 50%; background: #34d399; border: 2px solid #a7f3d0; animation: p-rise 3s infinite ease-in; opacity: 0.9; }
         .p-will-o-wisp { position: absolute; width: 16px; height: 16px; border-radius: 50%; background: #10b981; box-shadow: 0 0 15px #34d399; animation: p-float 4s infinite alternate ease-in-out; opacity: 1; }
 
-        .p-crystal-shard { position: absolute; width: 12px; height: 16px; background: #c084fc; border: 1px solid #e9d5ff; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); animation: p-spin-fall 4s infinite linear; opacity: 1; }
+        .p-crystal-shard { position: absolute; width: 12px; height: 16px; background: #38bdf8; border: 1px solid #bae6fd; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); animation: p-spin-fall 4s infinite linear; opacity: 1; }
 
         .p-sakura { position: absolute; width: 10px; height: 7px; background: #fbcfe8; border-radius: 10px 0 10px 0; animation: p-sakura-fall 5s infinite linear; opacity: 1; }
-        .p-dojo-moon { position: absolute; width: 80px; height: 80px; background: #fef08a; border-radius: 50%; box-shadow: 0 0 30px #ca8a04; top: 10%; right: 25%; }
+        .p-dojo-moon { position: absolute; width: 80px; height: 80px; background: #38bdf8; border-radius: 50%; box-shadow: 0 0 30px #0284c7; top: 10%; right: 25%; }
 
         .p-neon-spark { position: absolute; width: 3px; height: 30px; background: #22d3ee; animation: p-strike 0.5s infinite; opacity: 1; }
 
-        .p-ember { position: absolute; width: 8px; height: 8px; background: #facc15; border-radius: 50%; box-shadow: 0 0 10px #ef4444; animation: p-rise-fast 2s infinite ease-out; opacity: 1; }
+        .p-ember { position: absolute; width: 8px; height: 8px; background: #38bdf8; border-radius: 50%; box-shadow: 0 0 10px #06b6d4; animation: p-rise-fast 2s infinite ease-out; opacity: 1; }
 
         .p-spirit { position: absolute; width: 15px; height: 15px; background: #22d3ee; border-radius: 50%; animation: p-float 3s infinite alternate ease-in-out; opacity: 0.9; }
 
@@ -162,9 +168,9 @@
         .p-star { position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%; animation: p-twinkle 1s infinite alternate; opacity: 1; }
         .p-shooting-star { position: absolute; width: 60px; height: 3px; background: linear-gradient(90deg, #fff, transparent); transform: rotate(-45deg); animation: p-shoot 3s infinite; opacity: 1; }
 
-        .p-god-ray { position: absolute; width: 50px; height: 200%; background: linear-gradient(180deg, rgba(250,204,21,0.5), transparent); transform-origin: top center; animation: p-ray-swing 6s infinite alternate ease-in-out; }
+        .p-god-ray { position: absolute; width: 50px; height: 200%; background: linear-gradient(180deg, rgba(56,189,248,0.5), transparent); transform-origin: top center; animation: p-ray-swing 6s infinite alternate ease-in-out; }
 
-        /* SPRITE ANIMATIONS */
+        /* SPRITE ANIMATIONS - Clean retro subtle breathing without glowing pulse filter */
         #smogmon-svg { animation: float-smog 3s ease-in-out infinite; transition: opacity 0.5s, filter 0.5s; position: relative; z-index: 20; }
         @keyframes float-smog { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
         
@@ -177,8 +183,12 @@
         
         .smog-spore { position: absolute; width: 8px; height: 8px; background: #a855f7; border-radius: 50%; animation: spore-float 2s linear forwards; z-index: 15; }
         
-        .idle-breathe { animation: breathe 3s ease-in-out infinite; transform-origin: bottom center; }
-        @keyframes breathe { 0%, 100% { transform: scaleY(1) translateY(0); filter: drop-shadow(0 0 10px rgba(6,182,212,0.5)); } 50% { transform: scaleY(0.95) translateY(3px); filter: drop-shadow(0 0 25px rgba(6,182,212,0.9)); } }
+        /* Pokemon idle animation - natural retro bobbing, no glowing aura */
+        .idle-breathe { animation: breathe-subtle 2.5s ease-in-out infinite; transform-origin: bottom center; }
+        @keyframes breathe-subtle { 
+            0%, 100% { transform: scaleY(1) translateY(0); } 
+            50% { transform: scaleY(0.96) translateY(2px); } 
+        }
 
         @keyframes hit-shake {
             0% { transform: translate(1px, 1px) rotate(0deg); }
@@ -189,7 +199,7 @@
             100% { transform: translate(1px, -2px) rotate(-2deg); }
         }
         .anim-shake { animation: hit-shake 0.5s !important; }
-        .gekkouga-hit { filter: brightness(1.5) sepia(1) hue-rotate(-50deg) saturate(5) drop-shadow(0 0 30px #ef4444) !important; }
+        .gekkouga-hit { filter: brightness(1.5) sepia(1) hue-rotate(-50deg) saturate(5) drop-shadow(0 0 15px #ef4444) !important; }
 
         /* KEYFRAMES FOR PARTICLES */
         @keyframes p-drift { 0% { transform: translateX(-5%); } 100% { transform: translateX(5%); } }
@@ -206,23 +216,52 @@
         @keyframes spore-float { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(calc(40px * var(--vx)), calc(40px * var(--vy))) scale(1.5); opacity: 0; } }
 
         /* Badges */
-        .badge-box { background: var(--magi-card-dark); border-color: var(--magi-accent); }
+        .badge-box { background: var(--magi-card-dark); border-color: var(--magi-accent); position: relative; }
         .badge-icon { filter: grayscale(100%) opacity(0.3); transition: all 0.5s; }
-        .badge.unlocked .badge-icon { filter: grayscale(0%) opacity(1) drop-shadow(0 0 6px var(--magi-gold)); }
-        .badge.unlocked { background: var(--magi-card); border-color: var(--magi-gold); }
+        .badge.unlocked .badge-icon { filter: grayscale(0%) opacity(1) drop-shadow(0 0 8px var(--magi-cyan)); }
+        .badge.unlocked { background: var(--magi-card); border-color: var(--magi-cyan); }
+        .badge.had-before:not(.unlocked) { border-color: #3b82f6; }
+        .badge.had-before:not(.unlocked) .badge-icon { filter: grayscale(70%) opacity(0.5); }
 
-        /* Chakra */
-        .chakra-base { transition: all 1s ease-in-out; }
-        .chakra-off { opacity: 0; transform: scale(0.5); }
-        .chakra-inhale-r1 { color: var(--magi-accent-light); opacity: 0.8; transform: scale(1); animation: spin 2s linear infinite; }
-        .chakra-inhale-r2 { color: #c084fc; opacity: 0.8; transform: scale(0.8); animation: spin 1.5s linear reverse infinite; }
-        .chakra-inhale-c { background-color: var(--magi-accent); opacity: 0.6; transform: scale(1.2); }
-        .chakra-hold-r1 { color: var(--magi-gold); opacity: 1; transform: scale(0.8); animation: spin 0.3s linear infinite; }
-        .chakra-hold-r2 { color: var(--magi-gold-dark); opacity: 1; transform: scale(0.6); animation: spin 0.2s linear reverse infinite; }
-        .chakra-hold-c { background-color: var(--magi-gold); opacity: 0.9; transform: scale(1.5); animation: pulse 0.5s infinite; }
-        .chakra-exhale-r1 { color: #06b6d4; opacity: 0.4; transform: scale(1.5); animation: spin 4s linear infinite; }
-        .chakra-exhale-r2 { color: #22d3ee; opacity: 0.5; transform: scale(1.3); animation: spin 3s linear reverse infinite; }
-        .chakra-exhale-c { background-color: #0891b2; opacity: 0.3; transform: scale(0.9); }
+        /* Ash Gekkouga Water Shuriken Breathing Visuals */
+        .shuriken-base {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease;
+            transform-origin: center center;
+        }
+        .water-pulse-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(56, 189, 248, 0.6);
+            pointer-events: none;
+            animation: water-wave 2s infinite ease-out;
+        }
+        @keyframes water-wave {
+            0% { transform: scale(0.6); opacity: 0.8; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+        @keyframes water-burst {
+            0% { transform: scale(0.7) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.5) rotate(180deg); opacity: 0.9; filter: drop-shadow(0 0 25px #00f0ff); }
+            100% { transform: scale(1.1) rotate(360deg); opacity: 0.7; }
+        }
+        .anim-water-burst {
+            animation: water-burst 1s ease-out infinite alternate;
+        }
+
+        /* Continuous rotation animations controlled by JS classes */
+        .spin-fast {
+            animation: spin-cw 0.4s linear infinite;
+        }
+        .spin-slow {
+            animation: spin-cw 3.5s linear infinite;
+        }
+        .spin-exhale {
+            animation: spin-cw 1.2s ease-out infinite;
+        }
+        @keyframes spin-cw {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 
         ::-webkit-scrollbar { display: none; }
         .hidden-app { display: none !important; }
@@ -233,9 +272,12 @@
     <div id="view-dashboard" class="flex-1 flex flex-col p-3 space-y-4 overflow-y-auto pb-8 z-10 w-full max-w-[600px] mx-auto">
         
         <header class="flex justify-between items-center px-1">
-            <h1 class="font-pixel text-[10px] text-yellow-400 text-shadow-sm leading-relaxed">SMOKE-BEATER</h1>
-            <button onclick="toggleSettings(); playSound('click');" class="gba-dialog !border-2 p-2 !bg-[#2e0854] active:bg-[#4c1d95] shadow-none cursor-pointer">
-                <span class="font-pixel text-[8px] text-yellow-400">OPT</span>
+            <div class="flex items-center gap-2">
+                <span class="text-cyan-400 text-lg">⚔️</span>
+                <h1 class="font-pixel text-[10px] text-cyan-300 text-shadow-sm tracking-wider">SMOKE-BEATER</h1>
+            </div>
+            <button onclick="toggleSettings(); playSound('click');" class="gba-dialog !border-2 p-2 !bg-[#1f0b3d] hover:!bg-[#3b1270] shadow-none cursor-pointer">
+                <span class="font-pixel text-[8px] text-cyan-300">OPT</span>
             </button>
         </header>
 
@@ -253,13 +295,13 @@
             </div>
 
             <!-- UI: Enemy HP (Top Left) -->
-            <div class="absolute top-2 left-2 w-[150px] gba-dialog p-2 !border-2 shadow-md !bg-[#1a0933] z-20">
+            <div class="absolute top-2 left-2 w-[150px] gba-dialog p-2 !border-2 shadow-md !bg-[#130628] z-20">
                 <div class="flex justify-between items-end mb-1 border-b border-[#4c1d95] pb-1">
                     <span class="font-pixel text-[8px] uppercase font-bold text-white">Smog-Mon</span>
-                    <span class="font-pixel text-[6px] text-gray-300">Lv 99</span>
+                    <span class="font-pixel text-[6px] text-gray-400">Lv 99</span>
                 </div>
                 <div class="flex items-center justify-between gap-1 mb-1">
-                    <span class="font-pixel text-[6px] text-yellow-500 font-bold">KP</span>
+                    <span class="font-pixel text-[6px] text-white font-bold">KP</span>
                     <span id="smogmon-hp-val" class="font-pixel text-[6px] text-white ml-auto">100.0%</span>
                 </div>
                 <div class="flex-1 hp-bar-bg h-2">
@@ -278,11 +320,11 @@
                         <circle cx="30" cy="35" r="8" fill="#7e22ce" />
                         <circle cx="75" cy="45" r="10" fill="#7e22ce" />
                         <circle cx="40" cy="75" r="9" fill="#7e22ce" />
-                        <path d="M35 45 L45 42 L45 48 Z" fill="#facc15" />
-                        <path d="M65 45 L55 42 L55 48 Z" fill="#facc15" />
+                        <path d="M35 45 L45 42 L45 48 Z" fill="#38bdf8" />
+                        <path d="M65 45 L55 42 L55 48 Z" fill="#38bdf8" />
                         <circle cx="42" cy="45" r="2" fill="#000" />
                         <circle cx="58" cy="45" r="2" fill="#000" />
-                        <path d="M40 60 Q50 55 60 60" stroke="#facc15" stroke-width="3" fill="none" />
+                        <path d="M40 60 Q50 55 60 60" stroke="#a78bfa" stroke-width="3" fill="none" />
                         <circle cx="20" cy="20" r="10" fill="rgba(156, 163, 175, 0.9)" />
                         <circle cx="80" cy="25" r="12" fill="rgba(156, 163, 175, 0.9)" />
                         <circle cx="85" cy="70" r="8" fill="rgba(156, 163, 175, 0.9)" />
@@ -291,13 +333,13 @@
             </div>
 
             <!-- UI: Player HP (Bottom Right) -->
-            <div class="absolute bottom-2 right-2 w-[160px] gba-dialog p-2 !border-2 shadow-md !bg-[#1a0933] z-20" id="player-stats-box">
+            <div class="absolute bottom-2 right-2 w-[160px] gba-dialog p-2 !border-2 shadow-md !bg-[#130628] z-20" id="player-stats-box">
                 <div class="flex justify-between items-end mb-1 border-b border-[#4c1d95] pb-1">
                     <span class="font-pixel text-[8px] uppercase font-bold text-white">Ash-Quajutsu</span>
                     <span id="player-lvl" class="font-pixel text-[6px] text-gray-300">Lv 1</span>
                 </div>
                 <div class="flex items-center justify-between mb-1">
-                    <span class="font-pixel text-[6px] text-yellow-500 font-bold">KP</span>
+                    <span class="font-pixel text-[6px] text-white font-bold">KP</span>
                     <span id="player-hp-val" class="font-pixel text-[6px] text-white">100/100</span>
                 </div>
                 <div class="flex-1 hp-bar-bg h-2 mb-1.5">
@@ -310,28 +352,28 @@
             <div class="absolute left-[5%] bottom-[10%] w-[120px] h-[120px] z-10 flex flex-col items-center justify-end">
                 <div class="absolute bottom-0 w-[130px] h-[35px] rounded-[100%] border border-white/20 shadow-[0_10px_20px_rgba(0,0,0,0.8)] z-0 plat-base plt-0" id="platform-player"></div>
                 <div class="absolute bottom-2 w-[60px] h-[12px] bg-black/70 rounded-[100%] blur-[2px] z-10"></div>
-                <img src="gekkouga.png" alt="Ash-Quajutsu" class="relative z-20 w-24 h-24 mb-1 object-contain idle-breathe transition-transform drop-shadow-[0_0_10px_rgba(0,0,0,0.8)]" id="player-sprite">
+                <img src="gekkouga.png" alt="Ash-Quajutsu" class="relative z-20 w-24 h-24 mb-1 object-contain idle-breathe transition-transform drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)]" id="player-sprite">
             </div>
 
             <!-- FLOATING TEXT OVERLAY -->
             <div id="battle-fx-layer" class="absolute inset-0 z-50 pointer-events-none"></div>
             
             <!-- LIVE TIMER -->
-            <div class="absolute bottom-2 left-2 z-20 p-1 bg-black/60 rounded border border-purple-500/50">
-                 <p class="font-pixel text-[5px] text-purple-300 mb-1">RAUCHFREI SEIT:</p>
-                 <p id="live-timer" class="font-pixel text-[8px] text-yellow-400 drop-shadow-md">0T 00H 00M 00S</p>
+            <div class="absolute bottom-2 left-2 z-20 p-1 bg-black/75 rounded border border-cyan-500/40">
+                 <p class="font-pixel text-[5px] text-cyan-300 mb-1">RAUCHFREI SEIT:</p>
+                 <p id="live-timer" class="font-pixel text-[8px] text-cyan-200 drop-shadow-md">0T 00H 00M 00S</p>
             </div>
         </div>
 
         <!-- ACTION MENU & FINANCES -->
         <div class="grid grid-cols-2 gap-3">
-            <button onclick="logSmoke()" class="gba-dialog !border-4 !border-purple-600 p-2 !bg-[#2e0854] hover:!bg-[#4c1d95] active:scale-95 transition-transform flex flex-col items-center justify-center shadow-[0_4px_15px_rgba(124,58,237,0.4)]">
+            <button onclick="logSmoke()" class="gba-dialog !border-4 !border-purple-600 p-2 !bg-[#1f0b3d] hover:!bg-[#37146b] active:scale-95 transition-transform flex flex-col items-center justify-center shadow-[0_4px_15px_rgba(124,58,237,0.3)] cursor-pointer">
                 <span class="text-2xl mb-1">🔥</span>
                 <span class="font-pixel text-[6px] text-purple-200 leading-[1.8] text-center font-bold">ATTACKE: RAUCHEN<br>(-20 KP)</span>
             </button>
-            <div class="gba-dialog !border-4 !border-purple-600 p-2 !bg-[#1a0933] flex flex-col justify-center items-center">
+            <div class="gba-dialog !border-4 !border-purple-600 p-2 !bg-[#130628] flex flex-col justify-center items-center">
                 <span class="font-pixel text-[6px] text-purple-300 mb-1 tracking-wider">KOSTEN (GELOGGT)</span>
-                <span id="total-cost" class="font-pixel text-[11px] text-red-500 tracking-wider mb-2">€ 0,00</span>
+                <span id="total-cost" class="font-pixel text-[11px] text-red-400 tracking-wider mb-2">€ 0,00</span>
                 
                 <span class="font-pixel text-[6px] text-purple-300 mb-1 tracking-wider border-t border-[#4c1d95] pt-1 w-full text-center">GESPART (RAUCHFREI)</span>
                 <span id="total-saved" class="font-pixel text-[11px] text-emerald-400 tracking-wider">€ 0,00</span>
@@ -339,11 +381,11 @@
         </div>
 
         <!-- TRAINER CARD (BADGES) -->
-        <div class="gba-dialog !border-4 p-3 !bg-[#1a0933]">
-            <h2 class="font-pixel text-[8px] text-yellow-400 mb-3 border-b-2 border-[#4c1d95] pb-2 flex justify-between items-center">
+        <div class="gba-dialog !border-4 p-3 !bg-[#130628]">
+            <h2 class="font-pixel text-[8px] text-cyan-300 mb-3 border-b-2 border-[#4c1d95] pb-2 flex justify-between items-center">
                 <span>TRAINER-PASS</span>
                 <div class="flex gap-2 items-center">
-                    <button id="btn-champ" onclick="showChampionModal()" class="hidden-app bg-yellow-400 text-yellow-900 border border-yellow-600 px-1 py-0.5 rounded text-[5px] animate-pulse cursor-pointer">RUHMESHALLE</button>
+                    <button id="btn-champ" onclick="showChampionModal()" class="hidden-app bg-cyan-500 text-purple-950 font-bold border border-cyan-300 px-1 py-0.5 rounded text-[5px] animate-pulse cursor-pointer">RUHMESHALLE</button>
                     <span class="text-purple-300">ORDEN</span>
                 </div>
             </h2>
@@ -352,31 +394,71 @@
             </div>
         </div>
 
-        <!-- EPIC CHAKRA BREATHE WIDGET -->
-        <div class="gba-dark-box p-4 flex flex-col items-center relative overflow-hidden min-h-[180px]">
-             <h2 class="font-pixel text-[8px] text-purple-300 mb-4 tracking-wider w-full text-center border-b border-[#4c1d95] pb-2">SHURIKEN CHAKRA (CRAVING)</h2>
+        <!-- ASH-GRENINJA WATER SHURIKEN (CRAVING) -->
+        <div class="gba-dark-box p-4 flex flex-col items-center relative overflow-hidden min-h-[220px]">
+             <div class="flex justify-between items-center w-full border-b border-[#4c1d95] pb-2 mb-3">
+                 <h2 class="font-pixel text-[8px] text-cyan-300 tracking-wider">WASSER-SHURIKEN (CRAVING)</h2>
+                 <span class="font-pixel text-[6px] text-purple-300">4-7-8 FOKUS</span>
+             </div>
              
-             <!-- Multi-layer Chakra Aura -->
-             <div class="relative w-32 h-32 flex items-center justify-center mt-2 cursor-pointer" onclick="toggleBreathe()">
-                 <div id="aura-ring-1" class="absolute w-full h-full text-purple-500 opacity-30 chakra-base flex items-center justify-center"><svg viewBox="0 0 100 100" class="w-full h-full"><polygon points="50,0 60,40 100,50 60,60 50,100 40,60 0,50 40,40" fill="currentColor"/></svg></div>
-                 <div id="aura-ring-2" class="absolute w-3/4 h-3/4 text-purple-400 opacity-50 chakra-base flex items-center justify-center" style="transform: rotate(45deg);"><svg viewBox="0 0 100 100" class="w-full h-full"><polygon points="50,10 60,40 90,50 60,60 50,90 40,60 10,50 40,40" fill="currentColor"/></svg></div>
-                 <div id="aura-center" class="absolute w-1/2 h-1/2 rounded-full bg-purple-600 blur-md opacity-20 chakra-base"></div>
+             <!-- Ash Gekkouga Giant Water Shuriken -->
+             <div class="relative w-40 h-40 flex items-center justify-center cursor-pointer select-none" onclick="toggleBreathe()">
+                 <!-- Water Pulse Ripple FX -->
+                 <div id="shuriken-ripple" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0">
+                     <div class="water-pulse-ring w-32 h-32"></div>
+                     <div class="water-pulse-ring w-24 h-24" style="animation-delay: 0.6s;"></div>
+                 </div>
+
+                 <!-- Outer Ninja Shuriken Blade Layer (Ash-Greninja Style Cyan/Azure SVG) -->
+                 <div id="shuriken-layer-outer" class="absolute w-36 h-36 shuriken-base flex items-center justify-center text-cyan-400">
+                     <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_0_12px_rgba(6,182,212,0.8)]">
+                         <!-- 4 Giant Curved Hydro Water Blades -->
+                         <path d="M50,4 C54,26 74,46 96,50 C74,54 54,74 50,96 C46,74 26,54 4,50 C26,46 46,26 50,4 Z" fill="url(#shuriken-outer-grad)"/>
+                         <!-- Secondary sharp fins -->
+                         <path d="M50,18 C52,36 64,48 82,50 C64,52 52,64 50,82 C48,64 36,52 18,50 C36,48 48,36 50,18 Z" fill="#38bdf8" opacity="0.8"/>
+                         <defs>
+                             <linearGradient id="shuriken-outer-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                 <stop offset="0%" stop-color="#00f0ff"/>
+                                 <stop offset="50%" stop-color="#0284c7"/>
+                                 <stop offset="100%" stop-color="#00f0ff"/>
+                             </linearGradient>
+                         </defs>
+                     </svg>
+                 </div>
+
+                 <!-- Inner Swirling Water Vortex Blade -->
+                 <div id="shuriken-layer-inner" class="absolute w-24 h-24 shuriken-base flex items-center justify-center text-white" style="transform: rotate(45deg);">
+                     <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]">
+                         <polygon points="50,6 62,38 94,50 62,62 50,94 38,62 6,50 38,38" fill="#e0f2fe" opacity="0.9"/>
+                         <circle cx="50" cy="50" r="14" fill="#0284c7" stroke="#ffffff" stroke-width="3"/>
+                         <circle cx="50" cy="50" r="6" fill="#ffffff"/>
+                     </svg>
+                 </div>
+
+                 <!-- Center Glow Orb -->
+                 <div id="shuriken-glow" class="absolute w-12 h-12 rounded-full bg-cyan-400 blur-md opacity-40 shuriken-base"></div>
                  
-                 <div class="relative z-10 text-center select-none">
-                     <span id="breathe-sec" class="font-pixel text-xl text-yellow-400 block drop-shadow-md">START</span>
-                     <span id="breathe-text" class="font-pixel text-[6px] text-purple-200 mt-2 block tracking-widest drop-shadow-md">TIPPEN</span>
+                 <!-- Center Text Information -->
+                 <div class="relative z-20 text-center pointer-events-none">
+                     <span id="breathe-sec" class="font-pixel text-xl text-white block drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">START</span>
+                     <span id="breathe-text" class="font-pixel text-[6px] text-cyan-200 mt-1 block tracking-widest bg-black/60 px-1 py-0.5 rounded border border-cyan-500/40">TIPPEN</span>
                  </div>
              </div>
+
+             <!-- Breathing guidance subtext -->
+             <p id="breathe-desc" class="font-pixel text-[6px] text-purple-300 mt-3 text-center">
+                 Tippe auf das Shuriken, wenn dich Rauch-Craving überkommt.
+             </p>
         </div>
 
         <!-- ANALYTICS CHART -->
-        <div class="gba-dialog !border-4 p-3 !bg-[#1a0933]">
+        <div class="gba-dialog !border-4 p-3 !bg-[#130628]">
             <div class="flex justify-between items-center mb-3 border-b-2 border-[#4c1d95] pb-2">
-                <h2 class="font-pixel text-[8px] text-yellow-400">POKé-DEX STATS</h2>
+                <h2 class="font-pixel text-[8px] text-cyan-300">POKé-DEX STATS</h2>
                 <div class="flex gap-1">
                     <button onclick="setChartMode('today'); playSound('click');" id="btn-chart-today" class="font-pixel text-[6px] px-2 py-1.5 bg-[#7c3aed] text-white rounded shadow-sm">24H</button>
-                    <button onclick="setChartMode('week'); playSound('click');" id="btn-chart-week" class="font-pixel text-[6px] px-2 py-1.5 bg-[#2e0854] text-purple-300 rounded shadow-sm">7T</button>
-                    <button onclick="setChartMode('month'); playSound('click');" id="btn-chart-month" class="font-pixel text-[6px] px-2 py-1.5 bg-[#2e0854] text-purple-300 rounded shadow-sm">4W</button>
+                    <button onclick="setChartMode('week'); playSound('click');" id="btn-chart-week" class="font-pixel text-[6px] px-2 py-1.5 bg-[#1f0b3d] text-purple-300 rounded shadow-sm">7T</button>
+                    <button onclick="setChartMode('month'); playSound('click');" id="btn-chart-month" class="font-pixel text-[6px] px-2 py-1.5 bg-[#1f0b3d] text-purple-300 rounded shadow-sm">4W</button>
                 </div>
             </div>
             <div class="w-full h-40 relative">
@@ -384,18 +466,45 @@
             </div>
         </div>
 
-        <!-- AI PROFESSOR -->
+        <!-- AI PROFESSOR EICH INTERACTIVE LAB & CHAT -->
         <div class="gba-dark-box p-4 relative">
              <div class="flex items-center gap-3 mb-3 border-b-2 border-[#4c1d95] pb-2">
-                 <div class="text-3xl filter drop-shadow-md">👴</div>
-                 <h2 class="font-pixel text-[8px] text-yellow-400 leading-[1.6]">PROF. EICHS<br>VERHALTENS-LABOR</h2>
+                 <div class="w-12 h-12 flex-shrink-0 flex items-end justify-center bg-[#130628] border-2 border-cyan-500 rounded-lg shadow-[0_0_10px_rgba(6,182,212,0.4)] overflow-hidden">
+                     <img src="eich.png" alt="Prof. Eich" class="w-full h-full object-contain object-bottom">
+                 </div>
+                 <div>
+                     <h2 class="font-pixel text-[8px] text-cyan-300 leading-[1.6]">PROF. EICHS<br>VERHALTENS-LABOR</h2>
+                     <span class="font-pixel text-[5px] text-emerald-400">STATUS: BEREIT ZUM DIALOG</span>
+                 </div>
              </div>
-             <div class="bg-[#1a0933] border-2 border-[#7c3aed] p-3 rounded mb-3 shadow-inner">
-                 <p id="ai-output" class="font-pixel text-[7px] text-purple-200 leading-loose min-h-[40px]">"Hallo Trainer! Zeig mir deine POKéDEX Daten, und ich analysiere deine psychologischen Muster."</p>
+
+             <!-- Chat history display -->
+             <div id="ai-chat-box" class="bg-[#130628] border-2 border-[#7c3aed] p-3 rounded mb-3 shadow-inner max-h-48 overflow-y-auto space-y-2">
+                 <div class="text-purple-200">
+                     <span class="font-pixel text-[6px] text-cyan-400 block mb-1">PROF. EICH:</span>
+                     <p id="ai-output" class="font-pixel text-[7px] leading-loose">"Hallo Trainer! Frag mich um Rat bei Rauchdrang, Stress oder lass mich deine POKéDEX-Daten analysieren!"</p>
+                 </div>
              </div>
-             <button onclick="analyzePatterns(); playSound('click');" class="w-full bg-[#7c3aed] hover:bg-[#a855f7] border-b-4 border-[#4c1d95] rounded text-white font-pixel text-[7px] py-3 active:translate-y-1 active:border-b-0 transition-all">
-                 DATEN ANALYSIEREN
-             </button>
+
+             <!-- User Interactive Chat Form -->
+             <form id="eich-chat-form" onsubmit="handleEichChat(event)" class="space-y-2">
+                 <div class="flex gap-2">
+                     <input type="text" id="eich-user-input" placeholder="Antworte Prof. Eich (z.B. Ich habe Stress...)" class="flex-1 bg-[#130628] border-2 border-[#7c3aed] text-white font-pixel text-[7px] p-2 rounded outline-none focus:border-cyan-400 placeholder:text-gray-500">
+                     <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 border-b-2 border-cyan-800 text-white font-pixel text-[6px] px-3 py-2 rounded active:scale-95 transition-all">
+                         SENDEN
+                     </button>
+                 </div>
+             </form>
+             
+             <!-- Quick Action: Analyze DEX Patterns -->
+             <div class="mt-2 pt-2 border-t border-[#4c1d95]/50 flex gap-2">
+                 <button onclick="analyzePatterns(); playSound('click');" class="flex-1 bg-[#7c3aed] hover:bg-[#a855f7] border-b-2 border-[#4c1d95] rounded text-white font-pixel text-[6px] py-2 active:scale-95 transition-all">
+                     📊 MUSTER ANALYSIEREN
+                 </button>
+                 <button onclick="sendQuickPrompt('Ich habe gerade extremes Craving, was soll ich tun?'); playSound('click');" class="bg-[#1f0b3d] hover:bg-[#37146b] border border-cyan-500/50 rounded text-cyan-300 font-pixel text-[5px] px-2 py-2 active:scale-95 transition-all">
+                     ⚡ CRAVING NOTFALL
+                 </button>
+             </div>
         </div>
     </div>
 
@@ -409,10 +518,11 @@
     <div id="badge-modal" class="hidden-app fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4">
         <div class="gba-dialog !border-4 w-full max-w-sm p-5 text-center relative shadow-2xl">
             <button onclick="closeBadgeInfo()" class="absolute top-2 right-3 font-pixel text-red-500 text-lg hover:scale-110">X</button>
-            <div class="text-5xl mb-3 mt-2 filter drop-shadow-[0_0_10px_gold]" id="badge-modal-icon">🪨</div>
-            <h2 class="font-pixel text-[12px] text-yellow-400 mb-2 border-b-2 border-[#4c1d95] pb-2" id="badge-modal-title">Steinorden</h2>
+            <div class="text-5xl mb-3 mt-2 filter drop-shadow-[0_0_10px_cyan]" id="badge-modal-icon">🪨</div>
+            <h2 class="font-pixel text-[12px] text-cyan-300 mb-1 border-b-2 border-[#4c1d95] pb-2" id="badge-modal-title">Steinorden</h2>
+            <div id="badge-modal-status-tag" class="font-pixel text-[6px] mb-2"></div>
             <p class="font-pixel text-[8px] text-purple-300 mb-3" id="badge-modal-time">Ziel: 24 Stunden</p>
-            <div class="bg-[#1a0933] border-2 border-[#7c3aed] p-3 rounded">
+            <div class="bg-[#130628] border-2 border-[#7c3aed] p-3 rounded">
                 <p class="font-pixel text-[7px] text-white leading-loose" id="badge-modal-desc">
                     WHO Effekt: Kohlenmonoxid sinkt auf Normalniveau.
                 </p>
@@ -422,19 +532,19 @@
 
     <!-- CHAMPION MODAL (HALL OF FAME) -->
     <div id="champion-modal" class="hidden-app fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4">
-        <div class="gba-dialog !bg-[#2e0854] !border-4 !border-yellow-400 w-full max-w-md p-6 text-center relative shadow-[0_0_50px_rgba(250,204,21,0.6)] overflow-hidden">
+        <div class="gba-dialog !bg-[#1f0b3d] !border-4 !border-cyan-400 w-full max-w-md p-6 text-center relative shadow-[0_0_50px_rgba(6,182,212,0.6)] overflow-hidden">
             <div class="relative z-10">
-                <h1 class="font-pixel text-yellow-400 text-xl mb-2 drop-shadow-[0_0_10px_gold]">RUHMESHALLE</h1>
-                <h2 class="font-pixel text-purple-200 text-[10px] mb-6 border-b border-yellow-700 pb-3">CHAMPION</h2>
+                <h1 class="font-pixel text-cyan-300 text-xl mb-2 drop-shadow-[0_0_10px_cyan]">RUHMESHALLE</h1>
+                <h2 class="font-pixel text-purple-200 text-[10px] mb-6 border-b border-cyan-700 pb-3">CHAMPION</h2>
                 
-                <div class="bg-[#1a0933] border-2 border-yellow-500 p-4 rounded mb-5">
+                <div class="bg-[#130628] border-2 border-cyan-500 p-4 rounded mb-5">
                     <p class="font-pixel text-white text-[8px] mb-4 leading-[1.8]">
                         Unglaubliche Legende!<br>Du bist ein volles Jahr (365 Tage) rauchfrei! Smog-Mon ist besiegt.
                     </p>
                     <div class="grid grid-cols-2 gap-4 text-[7px] text-white">
                         <div class="flex flex-col">
                             <span class="text-purple-300">ERSPARNIS</span>
-                            <span id="champ-saved" class="text-yellow-400 font-bold mt-1 text-[10px]">€ 0</span>
+                            <span id="champ-saved" class="text-emerald-400 font-bold mt-1 text-[10px]">€ 0</span>
                         </div>
                         <div class="flex flex-col">
                             <span class="text-purple-300">NICHT GERAUCHT</span>
@@ -447,7 +557,7 @@
                     <!-- Badges injected via JS -->
                 </div>
                 
-                <button onclick="closeChampionModal()" class="bg-yellow-500 hover:bg-yellow-400 text-purple-900 font-pixel text-[8px] px-6 py-3 border-b-4 border-yellow-700 active:translate-y-1 active:border-b-0 transition-all rounded">
+                <button onclick="closeChampionModal()" class="bg-cyan-500 hover:bg-cyan-400 text-purple-950 font-pixel text-[8px] px-6 py-3 border-b-4 border-cyan-700 active:translate-y-1 active:border-b-0 transition-all rounded font-bold">
                     URKUNDE SCHLIESSEN
                 </button>
             </div>
@@ -457,26 +567,41 @@
     <!-- SETTINGS MODAL -->
     <div id="view-settings" class="hidden-app fixed inset-0 z-[60] bg-black/90 p-4 pt-safe pb-safe flex flex-col justify-center">
         <div class="gba-dialog !border-4 p-5">
-            <h1 class="font-pixel text-[11px] text-yellow-400 mb-5 border-b-2 border-[#4c1d95] pb-2">OPTIONEN</h1>
+            <h1 class="font-pixel text-[11px] text-cyan-300 mb-5 border-b-2 border-[#4c1d95] pb-2">OPTIONEN</h1>
             <div class="space-y-4 font-pixel text-[7px] text-white leading-[1.8]">
                 <div>
                     <label class="text-purple-300">PREIS PRO SCHACHTEL (€)</label>
-                    <input type="number" step="0.10" id="set-price" class="w-full bg-[#1a0933] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
+                    <input type="number" step="0.10" id="set-price" class="w-full bg-[#130628] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
                 </div>
                 <div>
                     <label class="text-purple-300">ZIGARETTEN / SCHACHTEL</label>
-                    <input type="number" id="set-cigs-pack" class="w-full bg-[#1a0933] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
+                    <input type="number" id="set-cigs-pack" class="w-full bg-[#130628] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
                 </div>
                 <div>
                     <label class="text-purple-300">ZIGARETTEN / TAG</label>
-                    <input type="number" id="set-cigs-day" class="w-full bg-[#1a0933] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
+                    <input type="number" id="set-cigs-day" class="w-full bg-[#130628] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
                 </div>
                 <div>
                     <label class="text-purple-300 flex justify-between items-center">
                         GEMINI API KEY
-                        <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-yellow-400 underline text-[6px]">KEY HOLEN</a>
+                        <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-cyan-400 underline text-[6px]">KEY HOLEN</a>
                     </label>
-                    <input type="password" id="set-api" class="w-full bg-[#1a0933] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm">
+                    <input type="password" id="set-api" class="w-full bg-[#130628] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm">
+                </div>
+
+                <!-- NOTIFICATIONS SECTION -->
+                <div class="border-t border-[#4c1d95] pt-3">
+                    <label class="text-cyan-300 block mb-1">TÄGLICHE PUSH-ERINNERUNGEN</label>
+                    <p class="text-[6px] text-purple-300 leading-normal mb-2">Täglicher Motivation-Funk von Prof. Eich & Craving-Schutz.</p>
+                    <div class="flex gap-2">
+                        <button type="button" id="btn-toggle-notif" onclick="togglePushNotifications()" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white p-2 rounded border border-cyan-400 text-[6px] font-bold">
+                            🔔 AKTIVIEREN
+                        </button>
+                        <button type="button" onclick="sendTestNotification()" class="bg-[#1f0b3d] hover:bg-[#37146b] text-cyan-300 px-2 py-1 rounded border border-[#7c3aed] text-[6px]">
+                            TEST
+                        </button>
+                    </div>
+                    <span id="notif-status-text" class="text-[5px] text-gray-400 block mt-1">STATUS: NICHT AKTIV</span>
                 </div>
                 
                 <div class="pt-2 flex flex-col gap-2">
@@ -486,7 +611,7 @@
                     <button onclick="hardReset()" class="w-full bg-red-600 border-b-4 border-red-900 rounded text-white py-3 active:translate-y-1 active:border-b-0 transition-all text-[8px]">
                         SPIELSTAND LÖSCHEN
                     </button>
-                    <button onclick="toggleSettings(); playSound('click');" class="w-full bg-gray-600 border-b-4 border-gray-800 rounded text-white py-3 active:translate-y-1 active:border-b-0 transition-all text-[8px]">
+                    <button onclick="toggleSettings(); playSound('click');" class="w-full bg-gray-700 border-b-4 border-gray-900 rounded text-white py-3 active:translate-y-1 active:border-b-0 transition-all text-[8px]">
                         ABBRECHEN
                     </button>
                 </div>
@@ -516,9 +641,13 @@
             xp: 0,
             hp: 100,
             lastKnownSmokeFreeSecs: 0,
+            maxSmokeFreeSecsReached: 0, // Records all-time best streak for badge history!
             championSeen: false,
+            pushEnabled: false,
+            lastNotifDay: '',
             lastUpdate: Date.now(),
-            startDate: Date.now()
+            startDate: Date.now(),
+            chatHistory: []
         };
 
         let chartMode = 'today';
@@ -528,71 +657,220 @@
         let isBreathing = false;
         let undoTimeout;
 
-        // ====== AUDIO ENGINE ======
-        let audioCtx;
-        function initAudio() {
+        // ====== AUTHENTIC 8-BIT / GBA POKEMON RETRO AUDIO ENGINE ======
+        let audioCtx = null;
+        function getAudioContext() {
             if (!audioCtx) {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                audioCtx = new AudioContext();
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioCtx = new AudioContextClass();
+                }
             }
-            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(() => {});
+            }
+            return audioCtx;
+        }
+
+        // Custom noise generator for battle impacts & explosions
+        function playNoise(ctx, duration, startGain = 0.3) {
+            if (!ctx) return;
+            const bufferSize = ctx.sampleRate * duration;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(800, ctx.currentTime);
+            filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
+
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(startGain, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+
+            noise.start();
+            noise.stop(ctx.currentTime + duration);
         }
 
         function playSound(type) {
             try {
-                initAudio();
-                const osc = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                osc.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                const now = audioCtx.currentTime;
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const now = ctx.currentTime;
                 
                 if (type === 'click') {
+                    // Crisp retro GBA menu cursor tick
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
                     osc.type = 'square';
-                    osc.frequency.setValueAtTime(600, now);
-                    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.05);
-                    gainNode.gain.setValueAtTime(0.05, now);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                    osc.frequency.setValueAtTime(900, now);
+                    osc.frequency.setValueAtTime(1400, now + 0.02);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
                     osc.start(now);
                     osc.stop(now + 0.05);
-                } else if (type === 'damage') {
+                } else if (type === 'attack_whoosh') {
+                    // Water Shuriken slice & swift throw
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(280, now);
+                    osc.frequency.exponentialRampToValueAtTime(1300, now + 0.15);
+                    osc.frequency.exponentialRampToValueAtTime(320, now + 0.28);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.28);
+                } else if (type === 'shuriken_hit') {
+                    // Effective battle hit: Crunch noise + square chord
+                    playNoise(ctx, 0.25, 0.35);
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.exponentialRampToValueAtTime(60, now + 0.2);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.2);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                           } else if (type === 'smog_launch') {
+                    // Toxic smog / sludge launch sound
+                    playNoise(ctx, 0.25, 0.3);
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
                     osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(120, now);
-                    osc.frequency.exponentialRampToValueAtTime(40, now + 0.3);
-                    gainNode.gain.setValueAtTime(0.3, now);
-                    gainNode.gain.linearRampToValueAtTime(0, now + 0.3);
+                    osc.frequency.setValueAtTime(90, now);
+                    osc.frequency.exponentialRampToValueAtTime(240, now + 0.15);
+                    osc.frequency.exponentialRampToValueAtTime(70, now + 0.35);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'damage') {
+                    // Player taking battle damage / smoking penalty
+                    playNoise(ctx, 0.35, 0.45);
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(160, now);
+                    osc.frequency.exponentialRampToValueAtTime(45, now + 0.3);
+                    gain.gain.setValueAtTime(0.35, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.3);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
                     osc.start(now);
                     osc.stop(now + 0.3);
-                } else if (type === 'level') {
-                    osc.type = 'square';
-                    const notes = [440, 554, 659, 880];
-                    notes.forEach((freq, i) => { osc.frequency.setValueAtTime(freq, now + i*0.1); });
-                    gainNode.gain.setValueAtTime(0.1, now);
-                    gainNode.gain.linearRampToValueAtTime(0, now + 0.4);
-                    osc.start(now);
-                    osc.stop(now + 0.4);
-                } else if (type === 'heal') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(400, now);
-                    osc.frequency.linearRampToValueAtTime(800, now + 0.2);
-                    gainNode.gain.setValueAtTime(0.1, now);
-                    gainNode.gain.linearRampToValueAtTime(0, now + 0.2);
-                    osc.start(now);
-                    osc.stop(now + 0.2);
-                } else if (type === 'fanfare') {
-                    const notes = [440, 554, 659, 880, 1108, 1318];
+                } else if (type === 'level' || type === 'badge_unlock') {
+                    // Authentic 8-bit Victory / Item Acquired jingle (G, B, D, G5)
+                    const notes = [392, 493.88, 587.33, 783.99, 987.77];
                     notes.forEach((freq, i) => {
-                        const o = audioCtx.createOscillator();
-                        const g = audioCtx.createGain();
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'square';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.09);
+                        gain.gain.setValueAtTime(0, now + i * 0.09);
+                        gain.gain.linearRampToValueAtTime(0.18, now + i * 0.09 + 0.02);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.09 + 0.25);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now + i * 0.09);
+                        osc.stop(now + i * 0.09 + 0.25);
+                    });
+                } else if (type === 'heal') {
+                    // Pokemon Center recovery chirp
+                    const freqs = [523.25, 659.25, 783.99, 1046.50];
+                    freqs.forEach((freq, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                        gain.gain.setValueAtTime(0.15, now + idx * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.15);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now + idx * 0.08);
+                        osc.stop(now + idx * 0.08 + 0.15);
+                    });
+                } else if (type === 'breathe_long_in') {
+                    // 4s Inhale: Warm, pure ambient swell (Acoustic major chord rising gently)
+                    const freqs = [261.63, 329.63, 392.00, 523.25]; // C Major
+                    freqs.forEach((f, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(f * 0.9, now);
+                        osc.frequency.exponentialRampToValueAtTime(f * 1.15, now + 3.8);
+                        gain.gain.setValueAtTime(0.001, now);
+                        gain.gain.linearRampToValueAtTime(0.04, now + 2.0);
+                        gain.gain.linearRampToValueAtTime(0.001, now + 3.95);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now);
+                        osc.stop(now + 4.0);
+                    });
+                } else if (type === 'breathe_long_hold') {
+                    // 7s Hold: Deep, soothing, perfectly smooth meditation pad (Pure crystal stillness)
+                    const freqs = [220.00, 329.63, 440.00, 659.25]; // Warm A minor/E resonance
+                    freqs.forEach((f, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(f, now);
+                        gain.gain.setValueAtTime(0.001, now);
+                        gain.gain.linearRampToValueAtTime(0.035, now + 0.8);
+                        gain.gain.setValueAtTime(0.035, now + 5.5);
+                        gain.gain.linearRampToValueAtTime(0.001, now + 6.95);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now);
+                        osc.stop(now + 7.0);
+                    });
+                } else if (type === 'breathe_long_out') {
+                    // 8s Exhale: Gentle, deep descending harmonic release (Complete relaxation)
+                    const freqs = [523.25, 392.00, 329.63, 261.63, 130.81]; // C major descending to low warm bass
+                    freqs.forEach((f, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(f, now);
+                        osc.frequency.exponentialRampToValueAtTime(f * 0.75, now + 7.6);
+                        gain.gain.setValueAtTime(0.035, now);
+                        gain.gain.linearRampToValueAtTime(0.025, now + 4.0);
+                        gain.gain.linearRampToValueAtTime(0.001, now + 7.95);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now);
+                        osc.stop(now + 8.0);
+                    });
+                } else if (type === 'fanfare') {
+                    const notes = [523.25, 523.25, 523.25, 659.25, 783.99, 1046.50];
+                    const times = [0, 0.12, 0.24, 0.36, 0.48, 0.65];
+                    notes.forEach((freq, i) => {
+                        const o = ctx.createOscillator();
+                        const g = ctx.createGain();
                         o.type = 'square';
                         o.frequency.value = freq;
                         o.connect(g);
-                        g.connect(audioCtx.destination);
-                        g.gain.setValueAtTime(0, now + i*0.15);
-                        g.gain.linearRampToValueAtTime(0.1, now + i*0.15 + 0.05);
-                        g.gain.linearRampToValueAtTime(0, now + i*0.15 + 0.5);
-                        o.start(now + i*0.15);
-                        o.stop(now + i*0.15 + 0.5);
+                        g.connect(ctx.destination);
+                        g.gain.setValueAtTime(0, now + times[i]);
+                        g.gain.linearRampToValueAtTime(0.18, now + times[i] + 0.02);
+                        g.gain.linearRampToValueAtTime(0, now + times[i] + (i === 5 ? 0.8 : 0.2));
+                        o.start(now + times[i]);
+                        o.stop(now + times[i] + (i === 5 ? 0.8 : 0.2));
                     });
                 }
             } catch(e) {}
@@ -604,7 +882,7 @@
             if(!fxLayer) return;
             const el = document.createElement('div');
             el.innerText = text;
-            el.className = `absolute font-pixel text-[14px] z-50 pointer-events-none drop-shadow-[0_0_10px_rgba(0,0,0,1)] whitespace-nowrap text-center w-full left-0`;
+            el.className = `absolute font-pixel text-[13px] z-50 pointer-events-none drop-shadow-[0_0_10px_rgba(0,0,0,1)] whitespace-nowrap text-center w-full left-0`;
             el.style.color = color;
             el.style.top = '40%';
             
@@ -619,11 +897,15 @@
             setTimeout(() => el.remove(), 3000);
         }
 
+        // Ash-Quajutsu Attack Animation (Water Shuriken)
         function playAttackAnimation(onHit) {
+            getAudioContext();
             const player = document.getElementById('player-sprite');
             const enemy = document.getElementById('smogmon-svg');
             const fxLayer = document.getElementById('battle-fx-layer');
             
+            playSound('attack_whoosh');
+
             if(!player || !enemy || !fxLayer) { if(onHit) onHit(); return; }
             
             const pRect = player.getBoundingClientRect();
@@ -640,13 +922,19 @@
 
             setTimeout(() => {
                 const shuriken = document.createElement('div');
-                shuriken.innerHTML = `<svg viewBox="0 0 100 100" class="w-10 h-10 drop-shadow-[0_0_10px_cyan]"><polygon points="50,0 60,40 100,50 60,60 50,100 40,60 0,50 40,40" fill="#22d3ee"/><circle cx="50" cy="50" r="10" fill="#0891b2"/></svg>`;
-                shuriken.className = 'absolute z-50';
+                shuriken.innerHTML = `
+                    <svg viewBox="0 0 100 100" class="w-12 h-12 drop-shadow-[0_0_12px_#00f0ff]">
+                        <path d="M50,4 C54,26 74,46 96,50 C74,54 54,74 50,96 C46,74 26,54 4,50 C26,46 46,26 50,4 Z" fill="#00f0ff"/>
+                        <circle cx="50" cy="50" r="12" fill="#0284c7"/>
+                        <circle cx="50" cy="50" r="5" fill="#ffffff"/>
+                    </svg>
+                `;
+                shuriken.className = 'absolute z-50 pointer-events-none';
                 
-                const startX = (pRect.left + pRect.width/2) - bRect.left - 20;
-                const startY = (pRect.top + pRect.height/2) - bRect.top - 20;
-                const endX = (eRect.left + eRect.width/2) - bRect.left - 20;
-                const endY = (eRect.top + eRect.height/2) - bRect.top - 20;
+                const startX = (pRect.left + pRect.width/2) - bRect.left - 24;
+                const startY = (pRect.top + pRect.height/2) - bRect.top - 24;
+                const endX = (eRect.left + eRect.width/2) - bRect.left - 24;
+                const endY = (eRect.top + eRect.height/2) - bRect.top - 24;
                 
                 shuriken.style.left = startX + 'px';
                 shuriken.style.top = startY + 'px';
@@ -654,9 +942,10 @@
                 
                 shuriken.animate([
                     { transform: 'translate(0px, 0px) rotate(0deg) scale(0.5)' },
-                    { transform: `translate(${endX - startX}px, ${endY - startY}px) rotate(1080deg) scale(1.5)` }
+                    { transform: `translate(${endX - startX}px, ${endY - startY}px) rotate(1440deg) scale(1.6)` }
                 ], { duration: 350, easing: 'ease-in' }).onfinish = () => {
                     shuriken.remove();
+                    playSound('shuriken_hit');
                     if(onHit) onHit();
                 };
             }, 250);
@@ -664,35 +953,208 @@
             setTimeout(() => { player.classList.add('idle-breathe'); }, 500);
         }
 
+        // Enemy (Smog-Mon) Attack Animation on Smoke Event
+        function playEnemyAttackAnimation(onHit) {
+            getAudioContext();
+            const player = document.getElementById('player-sprite');
+            const enemy = document.getElementById('smogmon-svg');
+            const fxLayer = document.getElementById('battle-fx-layer');
+            
+            playSound('smog_launch');
+
+            if(!enemy || !player || !fxLayer) { if(onHit) onHit(); return; }
+
+            const pRect = player.getBoundingClientRect();
+            const eRect = enemy.getBoundingClientRect();
+            const bRect = fxLayer.getBoundingClientRect();
+
+            // Smog-Mon lunge animation
+            enemy.animate([
+                { transform: 'scale(1) translate(0, 0)' },
+                { transform: 'scale(1.3) translate(-15px, 15px)', offset: 0.3 },
+                { transform: 'scale(1) translate(0, 0)' }
+            ], { duration: 400, easing: 'ease-out' });
+
+            setTimeout(() => {
+                // Toxic Smog Ball Projectile
+                const smogBall = document.createElement('div');
+                smogBall.innerHTML = `
+                    <svg viewBox="0 0 100 100" class="w-12 h-12 drop-shadow-[0_0_14px_rgba(168,85,247,0.9)]">
+                        <circle cx="50" cy="50" r="32" fill="#581c87" />
+                        <circle cx="50" cy="50" r="24" fill="#9333ea" />
+                        <circle cx="35" cy="40" r="10" fill="#a855f7" />
+                        <circle cx="65" cy="60" r="8" fill="#c084fc" />
+                        <circle cx="40" cy="65" r="6" fill="#e9d5ff" />
+                    </svg>
+                `;
+                smogBall.className = 'absolute z-50 pointer-events-none';
+
+                const startX = (eRect.left + eRect.width/2) - bRect.left - 24;
+                const startY = (eRect.top + eRect.height/2) - bRect.top - 24;
+                const endX = (pRect.left + pRect.width/2) - bRect.left - 24;
+                const endY = (pRect.top + pRect.height/2) - bRect.top - 24;
+
+                smogBall.style.left = startX + 'px';
+                smogBall.style.top = startY + 'px';
+                fxLayer.appendChild(smogBall);
+
+                smogBall.animate([
+                    { transform: 'translate(0px, 0px) scale(0.6) rotate(0deg)', opacity: 0.8 },
+                    { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(1.6) rotate(720deg)`, opacity: 1 }
+                ], { duration: 350, easing: 'ease-in' }).onfinish = () => {
+                    smogBall.remove();
+                    playSound('damage');
+                    if(onHit) onHit();
+                };
+            }, 180);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            initBadgesDOM();
             loadState();
+            initBadgesDOM();
             
-            // Check for initial load Smog-Mon hit
-            const now = Date.now();
-            const lastSmokeTime = AppState.smokeLogs.length > 0 ? AppState.smokeLogs[AppState.smokeLogs.length - 1] : AppState.startDate;
-            const currentSmokeFreeSecs = Math.max(0, Math.floor((now - lastSmokeTime) / 1000));
-            
-            if (AppState.lastKnownSmokeFreeSecs !== undefined && currentSmokeFreeSecs > AppState.lastKnownSmokeFreeSecs + 2) {
-                setTimeout(() => {
-                    playAttackAnimation(() => {
-                        const sprite = document.getElementById('smogmon-svg');
-                        if(sprite) {
-                            playSound('damage'); 
-                            sprite.classList.add('anim-smog-hit');
-                            showFloatingText('STARK GEBLIEBEN!', '#4ade80');
-                            setTimeout(() => sprite.classList.remove('anim-smog-hit'), 500);
-                        }
-                    });
-                }, 800);
+            // Register Service Worker for PWA and Push Notifications
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(err => {
+                    console.log('SW Registration error (ignore in offline/preview):', err);
+                });
             }
+            
+            // Listen to any user gestures to unlock WebAudio
+            const unlockAudio = () => {
+                getAudioContext();
+            };
+            ['click', 'touchstart', 'keydown'].forEach(evt => {
+                window.addEventListener(evt, unlockAudio, { passive: true });
+            });
+            
+            // Play Quajutsu Water Shuriken attack on load to reward being smoke-free
+            setTimeout(() => {
+                playAttackAnimation(() => {
+                    const sprite = document.getElementById('smogmon-svg');
+                    if(sprite) {
+                        sprite.classList.add('anim-smog-hit');
+                        showFloatingText('STARK GEBLIEBEN!', '#38bdf8');
+                        setTimeout(() => sprite.classList.remove('anim-smog-hit'), 500);
+                    }
+                });
+            }, 600);
             
             startEngine();
             renderChart(chartMode);
-            document.body.addEventListener('click', initAudio, {once: true});
+            renderChatHistory();
+            checkDailyNotification();
             
             setInterval(spawnSpore, 1200);
         });
+
+        // ================= PUSH NOTIFICATIONS & DAILY REMINDERS =================
+        async function togglePushNotifications() {
+            playSound('click');
+            if (!("Notification" in window)) {
+                alert("Dein Browser unterstützt Push-Benachrichtigungen nicht direkt. Füge die Seite in Safari zum Home-Bildschirm hinzu!");
+                return;
+            }
+
+            if (Notification.permission === "granted") {
+                AppState.pushEnabled = !AppState.pushEnabled;
+                saveState();
+                updateNotifUI();
+                if (AppState.pushEnabled) {
+                    sendTestNotification();
+                }
+            } else if (Notification.permission !== "denied") {
+                const permission = await Notification.requestPermission();
+                if (permission === "granted") {
+                    AppState.pushEnabled = true;
+                    saveState();
+                    updateNotifUI();
+                    sendTestNotification();
+                } else {
+                    AppState.pushEnabled = false;
+                    saveState();
+                    updateNotifUI();
+                    alert("Benachrichtigungen wurden nicht erlaubt. Du kannst sie in den iOS/Safari-Einstellungen für diese Seite aktivieren.");
+                }
+            } else {
+                alert("Benachrichtigungen sind in deinen Safari-Einstellungen blockiert. Bitte erlaube sie in den iOS-Einstellungen unter Safari.");
+            }
+        }
+
+        function updateNotifUI() {
+            const btn = document.getElementById('btn-toggle-notif');
+            const statusText = document.getElementById('notif-status-text');
+            if (!btn || !statusText) return;
+
+            if (!("Notification" in window)) {
+                statusText.innerText = "STATUS: NICHT UNTERSTÜTZT (PWA INSTALLIEREN)";
+                statusText.className = "text-[5px] text-gray-400 block mt-1";
+                return;
+            }
+
+            if (Notification.permission === "granted" && AppState.pushEnabled) {
+                btn.className = "flex-1 bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded border border-emerald-400 text-[6px] font-bold";
+                btn.innerText = "✅ AKTIVIERT (TÄGLICH)";
+                statusText.innerText = "STATUS: AKTIV (Täglicher Eich-Funk aktiv)";
+                statusText.className = "text-[5px] text-emerald-400 block mt-1";
+            } else {
+                btn.className = "flex-1 bg-cyan-600 hover:bg-cyan-500 text-white p-2 rounded border border-cyan-400 text-[6px] font-bold";
+                btn.innerText = "🔔 AKTIVIEREN";
+                statusText.innerText = Notification.permission === "denied" ? "STATUS: BLOCKIERT (IN EINSTELLUNGEN ERLAUBEN)" : "STATUS: NICHT AKTIV";
+                statusText.className = "text-[5px] text-gray-400 block mt-1";
+            }
+        }
+
+        function sendTestNotification() {
+            playSound('level');
+            const quotes = [
+                "Trainer! Du machst unglaubliche Fortschritte. Quajutsu sammelt weiterhin Kraft!",
+                "Stark geblieben! Bei Rauchdrang: Nutze das 4-7-8 Wasser-Shuriken im Labor!",
+                "Prof. Eich meldet: Deine Lungen regenerieren sich mit jeder Stunde weiter!"
+            ];
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            
+            triggerSmartPushNotification("Prof. Eich: Funkspruch! 🐸⚡", randomQuote);
+        }
+
+        function triggerSmartPushNotification(title, body) {
+            if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+            if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification(title, {
+                        body: body,
+                        icon: 'gekkouga.png',
+                        badge: 'gekkouga.png',
+                        vibrate: [200, 100, 200]
+                    });
+                });
+            } else {
+                new Notification(title, {
+                    body: body,
+                    icon: 'gekkouga.png'
+                });
+            }
+        }
+
+        function checkDailyNotification() {
+            if (!AppState.pushEnabled) return;
+            const todayStr = new Date().toDateString();
+            if (AppState.lastNotifDay === todayStr) return;
+
+            const now = Date.now();
+            const lastSmokeTime = AppState.smokeLogs.length > 0 ? AppState.smokeLogs[AppState.smokeLogs.length - 1] : AppState.startDate;
+            const smokeFreeSecs = Math.max(0, Math.floor((now - lastSmokeTime) / 1000));
+            const smokeFreeDays = Math.floor(smokeFreeSecs / 86400);
+
+            const msg = smokeFreeDays > 0 
+                ? `Du bist seit ${smokeFreeDays} Tag(en) rauchfrei! Quajutsu ist topfit.` 
+                : `Ein neuer Tag beginnt! Bleib fokussiert und wehre Smog-Mon ab!`;
+
+            triggerSmartPushNotification("Prof. Eich: Tägliche Motivation! 🏆", msg);
+            AppState.lastNotifDay = todayStr;
+            saveState();
+        }
         
         function spawnSpore() {
             const container = document.getElementById('smogmon-container');
@@ -701,7 +1163,7 @@
             const lastSmokeTime = AppState.smokeLogs.length > 0 ? AppState.smokeLogs[AppState.smokeLogs.length - 1] : AppState.startDate;
             const smokeFreeSecs = Math.max(0, Math.floor((now - lastSmokeTime) / 1000));
             const smogMonHpPct = Math.max(0, 100 - ((smokeFreeSecs / (365 * 86400)) * 100));
-            if (smogMonHpPct <= 0) return; // Dead
+            if (smogMonHpPct <= 0) return; // Defeated
             
             const spore = document.createElement('div');
             spore.className = 'smog-spore';
@@ -728,10 +1190,14 @@
             container.innerHTML = '';
             BADGES.forEach((b, i) => {
                 container.innerHTML += `
-                    <div id="badge-box-${i}" class="badge badge-box flex flex-col items-center justify-between p-2 border-2 rounded cursor-pointer hover:bg-[#4c1d95] transition-colors" onclick="showBadgeInfo(${i})">
-                        <span class="badge-icon text-xl mb-1">${b.icon}</span>
+                    <div id="badge-box-${i}" class="badge badge-box flex flex-col items-center justify-between p-2 border-2 rounded cursor-pointer hover:bg-[#3b1270] transition-colors" onclick="showBadgeInfo(${i})">
+                        <div class="flex items-center justify-between w-full">
+                            <span id="badge-star-${i}" class="font-pixel text-[6px] text-cyan-400 invisible" title="Bereits zuvor schon freigeschaltet!">⭐</span>
+                            <span class="badge-icon text-xl mb-1">${b.icon}</span>
+                            <span class="w-[6px]"></span>
+                        </div>
                         <span class="font-pixel text-[5px] text-white mb-1 leading-tight w-full truncate text-center">${b.name}</span>
-                        <div class="w-full bg-[#0f051d] h-1 rounded-sm overflow-hidden mb-1"><div id="badge-prog-${i}" class="h-full bg-yellow-400" style="width:0%"></div></div>
+                        <div class="w-full bg-[#0b0318] h-1 rounded-sm overflow-hidden mb-1"><div id="badge-prog-${i}" class="h-full bg-cyan-400" style="width:0%"></div></div>
                         <span id="badge-time-${i}" class="font-pixel text-[4px] text-purple-300">${b.reqStr}</span>
                     </div>
                 `;
@@ -745,6 +1211,8 @@
                 AppState = { ...AppState, ...JSON.parse(saved) };
                 if(AppState.cigsPerDay === undefined) AppState.cigsPerDay = 20; 
                 if(AppState.championSeen === undefined) AppState.championSeen = false;
+                if(AppState.maxSmokeFreeSecsReached === undefined) AppState.maxSmokeFreeSecsReached = 0;
+                if(!AppState.chatHistory) AppState.chatHistory = [];
             } else {
                 saveState();
             }
@@ -761,6 +1229,7 @@
                 document.getElementById('set-cigs-pack').value = AppState.cigsPerPack;
                 document.getElementById('set-cigs-day').value = AppState.cigsPerDay;
                 document.getElementById('set-api').value = AppState.apiKey;
+                updateNotifUI();
                 view.classList.remove('hidden-app');
             } else {
                 view.classList.add('hidden-app');
@@ -899,8 +1368,8 @@
                             el.style.animationDelay = `${del}s`;
                         } else {
                             el.className = 'p-ember'; 
-                            el.style.background = '#fef08a';
-                            el.style.boxShadow = '0 0 10px #facc15';
+                            el.style.background = '#38bdf8';
+                            el.style.boxShadow = '0 0 10px #00f0ff';
                             el.style.left = `${Math.random() * 100}%`;
                             el.style.bottom = `-10px`;
                             el.style.animationDelay = `${del}s`;
@@ -922,6 +1391,11 @@
             const lastSmokeTime = AppState.smokeLogs.length > 0 ? AppState.smokeLogs[AppState.smokeLogs.length - 1] : AppState.startDate;
             const smokeFreeSecs = Math.max(0, Math.floor((now - lastSmokeTime) / 1000));
             AppState.lastKnownSmokeFreeSecs = smokeFreeSecs; 
+            
+            // Update all-time highest streak to remember achieved badges
+            if (smokeFreeSecs > AppState.maxSmokeFreeSecsReached) {
+                AppState.maxSmokeFreeSecsReached = smokeFreeSecs;
+            }
             
             if (forceSave || Math.random() < 0.05) saveState();
             
@@ -947,9 +1421,9 @@
             const hpStatusEl = document.getElementById('player-hp-status');
             if(hpStatusEl) {
                 let statusHtml = "";
-                if(AppState.hp >= 80) statusHtml = `<span class="text-green-500 font-pixel text-[5px]">STATUS: TOPFIT</span>`;
-                else if(AppState.hp >= 30) statusHtml = `<span class="text-yellow-500 font-pixel text-[5px]">STATUS: ANGESCHLAGEN</span>`;
-                else statusHtml = `<span class="text-red-500 font-pixel text-[5px] animate-pulse">STATUS: CRAVING-GEFAHR</span>`;
+                if(AppState.hp >= 50) statusHtml = `<span class="text-emerald-400 font-pixel text-[5px]">STATUS: TOPFIT</span>`;
+                else if(AppState.hp >= 20) statusHtml = `<span class="text-amber-400 font-pixel text-[5px]">STATUS: ANGESCHLAGEN</span>`;
+                else statusHtml = `<span class="text-red-400 font-pixel text-[5px] animate-pulse">STATUS: CRAVING-GEFAHR</span>`;
                 hpStatusEl.innerHTML = statusHtml;
             }
 
@@ -991,20 +1465,39 @@
             if(costEl) costEl.innerText = `€ ${actualCost.toFixed(2).replace('.', ',')}`;
             if(saveEl) saveEl.innerText = `€ ${gespart.toFixed(2).replace('.', ',')}`;
 
-            // Badges Update & Arena Logic
+            // Badges Update & Arena Logic (With "Had Before" History indicator ⭐)
             let unlockedCount = 0;
             BADGES.forEach((b, i) => {
                 const el = document.getElementById(`badge-box-${i}`);
+                const starEl = document.getElementById(`badge-star-${i}`);
                 if (el) {
-                    const isUnlocked = smokeFreeSecs >= b.reqSecs;
-                    if (isUnlocked) unlockedCount++;
+                    const isCurrentlyActive = smokeFreeSecs >= b.reqSecs;
+                    const hadInPast = AppState.maxSmokeFreeSecsReached >= b.reqSecs;
+
+                    if (isCurrentlyActive) unlockedCount++;
                     
-                    if (isUnlocked && !el.classList.contains('unlocked')) {
+                    // Star symbol indicates if this badge was ever earned in the past
+                    if (starEl) {
+                        if (hadInPast) {
+                            starEl.classList.remove('invisible');
+                            starEl.innerText = isCurrentlyActive ? '★' : '⭐';
+                            starEl.title = isCurrentlyActive ? 'Aktiver Orden!' : 'Diesen Orden hattest du bereits in einem früheren Streak!';
+                        } else {
+                            starEl.classList.add('invisible');
+                        }
+                    }
+
+                    if (isCurrentlyActive && !el.classList.contains('unlocked')) {
                         el.classList.add('unlocked');
-                        playSound('level');
-                        showFloatingText('ORDEN ERHALTEN!', '#facc15');
-                    } else if (!isUnlocked) {
+                        playSound('badge_unlock');
+                        showFloatingText('ORDEN ERHALTEN!', '#00f0ff');
+                    } else if (!isCurrentlyActive) {
                         el.classList.remove('unlocked');
+                        if (hadInPast) {
+                            el.classList.add('had-before');
+                        } else {
+                            el.classList.remove('had-before');
+                        }
                     }
                     
                     const pct = Math.min(100, (smokeFreeSecs / b.reqSecs) * 100);
@@ -1013,12 +1506,14 @@
                     
                     const timeEl = document.getElementById(`badge-time-${i}`);
                     if(timeEl) {
-                        if(isUnlocked) {
-                            timeEl.innerText = "ERREICHT!";
-                            timeEl.classList.add('text-yellow-400');
+                        if(isCurrentlyActive) {
+                            timeEl.innerText = "AKTIV!";
+                            timeEl.classList.add('text-cyan-300');
+                            timeEl.classList.remove('text-purple-300');
                         } else {
                             timeEl.innerText = formatTimeLeft(b.reqSecs - smokeFreeSecs);
-                            timeEl.classList.remove('text-purple-300');
+                            timeEl.classList.remove('text-cyan-300');
+                            timeEl.classList.add('text-purple-300');
                         }
                     }
                 }
@@ -1039,24 +1534,26 @@
 
         // ================= LOGGING =================
         function logSmoke() {
-            playSound('damage');
             if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
             
-            const playerBox = document.getElementById('player-stats-box');
-            const playerSprite = document.getElementById('player-sprite');
-            
-            if (playerBox) {
-                playerBox.classList.remove('anim-shake');
-                void playerBox.offsetWidth;
-                playerBox.classList.add('anim-shake');
-            }
-            if (playerSprite) {
-                playerSprite.classList.remove('anim-shake');
-                playerSprite.classList.add('gekkouga-hit');
-                void playerSprite.offsetWidth;
-                playerSprite.classList.add('anim-shake');
-                setTimeout(() => playerSprite.classList.remove('gekkouga-hit'), 500);
-            }
+            playEnemyAttackAnimation(() => {
+                const playerBox = document.getElementById('player-stats-box');
+                const playerSprite = document.getElementById('player-sprite');
+                
+                if (playerBox) {
+                    playerBox.classList.remove('anim-shake');
+                    void playerBox.offsetWidth;
+                    playerBox.classList.add('anim-shake');
+                }
+                if (playerSprite) {
+                    playerSprite.classList.remove('anim-shake');
+                    playerSprite.classList.add('gekkouga-hit');
+                    void playerSprite.offsetWidth;
+                    playerSprite.classList.add('anim-shake');
+                    setTimeout(() => playerSprite.classList.remove('gekkouga-hit'), 500);
+                }
+                showFloatingText('SMOG-TREFFER! (-20 KP)', '#ef4444');
+            });
             
             AppState.smokeLogs.push(Date.now());
             AppState.hp = Math.max(0, AppState.hp - 20); 
@@ -1084,7 +1581,7 @@
                 saveState();
                 updateDashboard(true);
                 renderChart(chartMode);
-                showFloatingText('HEILUNG!', '#4ade80');
+                showFloatingText('HEILUNG!', '#10b981');
             }
             const toast = document.getElementById('undo-toast');
             if (toast) toast.classList.add('-translate-y-40', 'opacity-0');
@@ -1095,10 +1592,26 @@
         function showBadgeInfo(idx) {
             playSound('click');
             const b = BADGES[idx];
+            const now = Date.now();
+            const lastSmokeTime = AppState.smokeLogs.length > 0 ? AppState.smokeLogs[AppState.smokeLogs.length - 1] : AppState.startDate;
+            const smokeFreeSecs = Math.max(0, Math.floor((now - lastSmokeTime) / 1000));
+            const isActive = smokeFreeSecs >= b.reqSecs;
+            const hadInPast = AppState.maxSmokeFreeSecsReached >= b.reqSecs;
+
             document.getElementById('badge-modal-icon').innerText = b.icon;
             document.getElementById('badge-modal-title').innerText = b.name;
             document.getElementById('badge-modal-time').innerText = `ZIEL: ${b.reqStr}`;
             document.getElementById('badge-modal-desc').innerText = b.desc;
+
+            const statusTag = document.getElementById('badge-modal-status-tag');
+            if (isActive) {
+                statusTag.innerHTML = `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-400 px-2 py-1 rounded">★ AKTUELL FREIGESCHALTET</span>`;
+            } else if (hadInPast) {
+                statusTag.innerHTML = `<span class="bg-cyan-500/20 text-cyan-300 border border-cyan-400 px-2 py-1 rounded">⭐ BEREITS SCHON MAL ERREICHT!</span>`;
+            } else {
+                statusTag.innerHTML = `<span class="bg-purple-950 text-purple-400 border border-purple-800 px-2 py-1 rounded">NOCH NICHT ERREICHT</span>`;
+            }
+
             document.getElementById('badge-modal').classList.remove('hidden-app');
         }
         function closeBadgeInfo() {
@@ -1114,8 +1627,8 @@
             champBadges.innerHTML = '';
             BADGES.forEach(b => {
                 champBadges.innerHTML += `
-                    <div class="flex flex-col items-center p-1 bg-yellow-500/20 border border-yellow-500 rounded">
-                        <span class="text-2xl drop-shadow-[0_0_5px_gold]">${b.icon}</span>
+                    <div class="flex flex-col items-center p-1 bg-cyan-500/20 border border-cyan-400 rounded">
+                        <span class="text-2xl drop-shadow-[0_0_8px_#00f0ff]">${b.icon}</span>
                     </div>
                 `;
             });
@@ -1145,10 +1658,10 @@
                 if(btn) {
                     if(m === mode) {
                         btn.classList.add('bg-[#7c3aed]', 'text-white');
-                        btn.classList.remove('bg-[#2e0854]', 'text-purple-300');
+                        btn.classList.remove('bg-[#1f0b3d]', 'text-purple-300');
                     } else {
                         btn.classList.remove('bg-[#7c3aed]', 'text-white');
-                        btn.classList.add('bg-[#2e0854]', 'text-purple-300');
+                        btn.classList.add('bg-[#1f0b3d]', 'text-purple-300');
                     }
                 }
             });
@@ -1177,7 +1690,7 @@
                     if(daysAgo >= 0 && daysAgo < 7) data[6 - daysAgo]++;
                 });
             } else if (period === 'month') {
-                labels = ['W-3', 'W-2', 'W-1', 'Aktuell'];
+                labels = ['W1', 'W2', 'W3', 'W4'];
                 data = new Array(4).fill(0);
                 const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
                 logs.forEach(ts => {
@@ -1196,9 +1709,9 @@
                     labels: labels,
                     datasets: [{
                         data: data,
-                        backgroundColor: '#a855f7',
+                        backgroundColor: '#06b6d4',
                         borderWidth: 2,
-                        borderColor: '#facc15',
+                        borderColor: '#38bdf8',
                         borderRadius: 0,
                         barPercentage: 0.8
                     }]
@@ -1216,9 +1729,9 @@
             });
         }
 
-        // ================= CHAKRA BREATHE (4-7-8) =================
+        // ================= ASH-GEKKOUGA SHURIKEN BREATHE (4-7-8) =================
         let breatheSec = 0;
-        let breathePhase = 0; 
+        let breathePhase = 0; // 0=off, 1=inhale (4s), 2=hold (7s), 3=exhale (8s)
         
         function toggleBreathe() {
             playSound('click');
@@ -1227,55 +1740,93 @@
                 clearInterval(breatheInterval);
                 document.getElementById('breathe-sec').innerText = "START";
                 document.getElementById('breathe-text').innerText = "TIPPEN";
-                setAuraPhase('off');
+                document.getElementById('breathe-desc').innerText = "Tippe auf das Shuriken, wenn dich Rauch-Craving überkommt.";
+                setShurikenPhase('off');
                 return;
             }
             isBreathing = true;
             breathePhase = 1;
             breatheSec = 4;
-            setAuraPhase('inhale');
+            setShurikenPhase('inhale');
             updateBreatheUI();
             
             breatheInterval = setInterval(() => {
                 breatheSec--;
                 if(breatheSec <= 0) {
-                    if(breathePhase === 1) { breathePhase = 2; breatheSec = 7; setAuraPhase('hold'); }
-                    else if(breathePhase === 2) { breathePhase = 3; breatheSec = 8; setAuraPhase('exhale'); }
-                    else if(breathePhase === 3) { breathePhase = 1; breatheSec = 4; setAuraPhase('inhale'); }
+                    if(breathePhase === 1) { 
+                        breathePhase = 2; 
+                        breatheSec = 7; 
+                        setShurikenPhase('hold'); 
+                    } else if(breathePhase === 2) { 
+                        breathePhase = 3; 
+                        breatheSec = 8; 
+                        setShurikenPhase('exhale'); 
+                    } else if(breathePhase === 3) { 
+                        breathePhase = 1; 
+                        breatheSec = 4; 
+                        setShurikenPhase('inhale'); 
+                    }
                 }
                 updateBreatheUI();
             }, 1000);
         }
 
-        function setAuraPhase(phase) {
-            const r1 = document.getElementById('aura-ring-1');
-            const r2 = document.getElementById('aura-ring-2');
-            const center = document.getElementById('aura-center');
-            
-            r1.className = 'absolute chakra-base flex items-center justify-center';
-            r2.className = 'absolute chakra-base flex items-center justify-center';
-            center.className = 'absolute rounded-full blur-md chakra-base';
+        function setShurikenPhase(phase) {
+            const outer = document.getElementById('shuriken-layer-outer');
+            const inner = document.getElementById('shuriken-layer-inner');
+            const glow = document.getElementById('shuriken-glow');
+            const ripple = document.getElementById('shuriken-ripple');
+            const desc = document.getElementById('breathe-desc');
+
+            // Reset animation classes
+            outer.classList.remove('spin-fast', 'spin-slow', 'spin-exhale', 'anim-water-burst');
+            inner.classList.remove('spin-fast', 'spin-slow', 'spin-exhale');
+            ripple.classList.add('opacity-0');
             
             if(phase === 'off') {
-                r1.classList.add('w-full', 'h-full', 'text-purple-500', 'opacity-30');
-                r2.classList.add('w-3/4', 'h-3/4', 'text-purple-400', 'opacity-50');
-                r2.style.transform = 'rotate(45deg)';
-                center.classList.add('w-1/2', 'h-1/2', 'bg-purple-600', 'opacity-20');
+                outer.style.transform = 'scale(1) rotate(0deg)';
+                inner.style.transform = 'scale(1) rotate(45deg)';
+                glow.style.transform = 'scale(1)';
+                glow.style.opacity = '0.4';
+                glow.className = 'absolute w-12 h-12 rounded-full bg-cyan-400 blur-md opacity-40 shuriken-base';
             } else if(phase === 'inhale') {
-                r1.classList.add('chakra-inhale-r1', 'w-3/4', 'h-3/4');
-                r2.classList.add('chakra-inhale-r2', 'w-2/3', 'h-2/3');
-                center.classList.add('chakra-inhale-c', 'w-20', 'h-20');
+                // Einatmen (4 Sekunden): Durchgehender, sanfter Akkord-Aufstieg
+                playSound('breathe_long_in');
+                outer.classList.add('spin-fast');
+                inner.classList.add('spin-fast');
+                outer.style.transform = 'scale(1.25)';
+                inner.style.transform = 'scale(1.15)';
+                glow.style.transform = 'scale(1.8)';
+                glow.style.opacity = '0.8';
+                glow.className = 'absolute w-16 h-16 rounded-full bg-cyan-300 blur-lg shuriken-base';
+                ripple.classList.remove('opacity-0');
                 document.getElementById('breathe-text').innerText = "EINATMEN";
+                desc.innerText = "Tief durch die Nase einatmen... Das Wasser-Shuriken lädt Chakra auf!";
             } else if(phase === 'hold') {
-                r1.classList.add('chakra-hold-r1', 'w-2/3', 'h-2/3');
-                r2.classList.add('chakra-hold-r2', 'w-1/2', 'h-1/2');
-                center.classList.add('chakra-hold-c', 'w-16', 'h-16');
+                // Halten (7 Sekunden): Durchgehender, warmer Meditations-Klang
+                playSound('breathe_long_hold');
+                outer.classList.add('spin-slow');
+                inner.classList.add('spin-slow');
+                outer.style.transform = 'scale(1.1)';
+                inner.style.transform = 'scale(0.95)';
+                glow.style.transform = 'scale(2.2)';
+                glow.style.opacity = '0.9';
+                glow.className = 'absolute w-16 h-16 rounded-full bg-emerald-400 blur-md shuriken-base';
                 document.getElementById('breathe-text').innerText = "HALTEN";
+                desc.innerText = "Luft anhalten... Volle Ruhe und Konzentration auf dein Ziel.";
             } else if(phase === 'exhale') {
-                r1.classList.add('chakra-exhale-r1', 'w-full', 'h-full');
-                r2.classList.add('chakra-exhale-r2', 'w-3/4', 'h-3/4');
-                center.classList.add('chakra-exhale-c', 'w-28', 'h-28');
+                // Ausatmen (8 Sekunden): Durchgehender, tiefer Entspannungs-Klangteppich
+                playSound('breathe_long_out');
+                outer.classList.add('anim-water-burst');
+                inner.classList.add('spin-exhale');
+                outer.style.transform = 'scale(1.4)';
+                inner.style.transform = 'scale(1.3)';
+                glow.style.transform = 'scale(2.5)';
+                glow.style.opacity = '0.7';
+                glow.className = 'absolute w-20 h-20 rounded-full bg-cyan-400 blur-xl shuriken-base';
+                ripple.classList.remove('opacity-0');
                 document.getElementById('breathe-text').innerText = "AUSATMEN";
+                desc.innerText = "Langsam durch den Mund auspusten... Die Craving-Welle löst sich auf!";
             }
         }
 
@@ -1283,7 +1834,110 @@
             document.getElementById('breathe-sec').innerText = breatheSec;
         }
 
-        // ================= GEMINI AI (PROF EICH) =================
+        // ================= GEMINI AI (PROF EICH INTERACTIVE DIALOG) =================
+        function renderChatHistory() {
+            const chatBox = document.getElementById('ai-chat-box');
+            if (!chatBox) return;
+            if (!AppState.chatHistory || AppState.chatHistory.length === 0) return;
+
+            chatBox.innerHTML = '';
+            AppState.chatHistory.forEach(msg => {
+                const isUser = msg.sender === 'user';
+                const el = document.createElement('div');
+                el.className = isUser ? 'text-right' : 'text-left';
+                el.innerHTML = `
+                    <span class="font-pixel text-[5px] ${isUser ? 'text-purple-300' : 'text-cyan-400'} block mb-0.5">${isUser ? 'DU:' : 'PROF. EICH:'}</span>
+                    <p class="font-pixel text-[7px] ${isUser ? 'text-white bg-[#1f0b3d] inline-block p-1.5 rounded border border-purple-700' : 'text-purple-100'} leading-loose">${msg.text}</p>
+                `;
+                chatBox.appendChild(el);
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function sendQuickPrompt(promptText) {
+            const input = document.getElementById('eich-user-input');
+            if(input) {
+                input.value = promptText;
+                handleEichChat(new Event('submit'));
+            }
+        }
+
+        async function handleEichChat(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            const input = document.getElementById('eich-user-input');
+            if (!input) return;
+            const userText = input.value.trim();
+            if (!userText) return;
+
+            if (!AppState.apiKey) {
+                alert("Prof. Eich benötigt deinen Gemini API-Key (gemini-3.1-flash-lite) in den Einstellungen (OPT-Button oben rechts).");
+                return;
+            }
+
+            // Append user message
+            if (!AppState.chatHistory) AppState.chatHistory = [];
+            AppState.chatHistory.push({ sender: 'user', text: userText });
+            input.value = '';
+            renderChatHistory();
+
+            const chatBox = document.getElementById('ai-chat-box');
+            const loadingMsg = document.createElement('div');
+            loadingMsg.id = 'eich-loading';
+            loadingMsg.innerHTML = `<span class="font-pixel text-[6px] text-cyan-400 block">PROF. EICH:</span><p class="font-pixel text-[7px] text-cyan-200 animate-pulse">Prof. Eich studiert deine Antwort und bereitet Rat vor...</p>`;
+            chatBox.appendChild(loadingMsg);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const now = Date.now();
+            const lastSmokeTime = AppState.smokeLogs.length > 0 ? AppState.smokeLogs[AppState.smokeLogs.length - 1] : AppState.startDate;
+            const smokeFreeSecs = Math.max(0, Math.floor((now - lastSmokeTime) / 1000));
+            const smokeFreeDays = Math.floor(smokeFreeSecs / 86400);
+            const smokeFreeHours = Math.floor((smokeFreeSecs % 86400) / 3600);
+
+            const sysPrompt = `Du bist Professor Eich aus Pokémon, aber spezialisiert als wissenschaftlicher Verhaltenspsychologe & Suchttherapeut für Raucherentwöhnung. 
+Kontext des Spielers:
+- Er ist seit ${smokeFreeDays} Tagen und ${smokeFreeHours} Stunden rauchfrei.
+- HP: ${Math.floor(AppState.hp)}/100 (Quajutsu).
+- Bisher geraucht geloggt: ${AppState.smokeLogs.length} Zigaretten.
+
+Antworte dem Trainer auf seine Nachricht mit einer freundlichen, motivierenden Pokémon-Professor-Persönlichkeit ("Trainer!").
+Gib ihm sofort umsetzbare, konkrete psychologische Tipps (Kognitive Verhaltenstherapie, Achtsamkeit, Craving-Surfing, Ablenkung).
+Antworte prägnant in maximal 2-3 kurzen Sätzen. Bleibe authentisch im Retro-GBA Pokémon-Stil.`;
+
+            // Build dialog conversation history for Gemini
+            const contents = [
+                { role: 'user', parts: [{ text: `${sysPrompt}\n\nTrainer sagt: ${userText}` }] }
+            ];
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${AppState.apiKey}`;
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: contents })
+                });
+
+                const data = await res.json();
+                if (data.error) throw new Error(data.error.message);
+
+                const responseText = data.candidates[0].content.parts[0].text.replace(/\*/g, '').trim();
+                const loadEl = document.getElementById('eich-loading');
+                if (loadEl) loadEl.remove();
+
+                AppState.chatHistory.push({ sender: 'eich', text: `"${responseText}"` });
+                if (AppState.chatHistory.length > 10) AppState.chatHistory = AppState.chatHistory.slice(-10);
+                saveState();
+                renderChatHistory();
+                playSound('heal');
+            } catch(err) {
+                console.error("Eich Chat Error:", err);
+                const loadEl = document.getElementById('eich-loading');
+                if (loadEl) loadEl.remove();
+                AppState.chatHistory.push({ sender: 'eich', text: "Fehler beim Laborfunk! Prüfe deinen API-Key in den OPT-Einstellungen." });
+                renderChatHistory();
+            }
+        }
+
         async function analyzePatterns() {
             if (!AppState.apiKey) {
                 alert("Prof. Eich benötigt den Gemini API-Key (gemini-3.1-flash-lite) in den Einstellungen (OPT-Button).");
@@ -1292,11 +1946,18 @@
             
             const logs = AppState.smokeLogs;
             if (logs.length < 3) {
-                document.getElementById('ai-output').innerText = "Hmm... Der POKéDEX hat noch nicht genug Daten gesammelt. Komm später wieder!";
+                if (!AppState.chatHistory) AppState.chatHistory = [];
+                AppState.chatHistory.push({ sender: 'eich', text: "Hmm... Der POKéDEX hat noch nicht genug Daten gesammelt. Bleib stark und komm später wieder!" });
+                renderChatHistory();
                 return;
             }
 
-            document.getElementById('ai-output').innerText = "Verbindung zum Labor wird hergestellt. Analysiere Daten...";
+            const chatBox = document.getElementById('ai-chat-box');
+            const loadingMsg = document.createElement('div');
+            loadingMsg.id = 'eich-loading';
+            loadingMsg.innerHTML = `<span class="font-pixel text-[6px] text-cyan-400 block">PROF. EICH:</span><p class="font-pixel text-[7px] text-cyan-200 animate-pulse">Analysiere POKéDEX Zeitstempel im Labor...</p>`;
+            chatBox.appendChild(loadingMsg);
+            chatBox.scrollTop = chatBox.scrollHeight;
             
             const recentLogs = logs.slice(-30).map(ts => {
                 const d = new Date(ts);
@@ -1307,7 +1968,7 @@
 
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${AppState.apiKey}`;
             
-            const sysPrompt = "Du bist Prof. Eich, der berühmte Pokémon-Forscher, arbeitest aber als Verhaltenspsychologe. Analysiere die Zeitstempel der gerauchten Zigaretten des Trainers. Finde Muster (z.B. Morgens, Abends). Gib dem Trainer exakt 2 extrem kurze, präzise und umsetzbare KVT-Tipps zur Gewohnheitsunterbrechung. Sprech ihn als 'Trainer' an. Maximal 3 kurze Sätze insgesamt. Bleib im Pokémon-GBA-Charakter, aber hilf ernsthaft.";
+            const sysPrompt = "Du bist Prof. Eich, der berühmte Pokémon-Forscher und Verhaltenspsychologe. Analysiere die Zeitstempel der gerauchten Zigaretten des Trainers. Finde Muster (z.B. Morgens, Abends). Gib dem Trainer exakt 2 extrem kurze, präzise und umsetzbare KVT-Tipps zur Gewohnheitsunterbrechung. Sprech ihn als 'Trainer' an. Maximal 3 kurze Sätze insgesamt. Bleib im Pokémon-GBA-Charakter, aber hilf ernsthaft.";
             const fullPrompt = `${sysPrompt}\n\nZeitstempel der letzten Zigaretten:\n${recentLogs.join('\n')}`;
 
             try {
@@ -1322,12 +1983,21 @@
                 const data = await res.json();
                 if (data.error) throw new Error(data.error.message);
                 
-                const responseText = data.candidates[0].content.parts[0].text.replace(/\*/g, '');
-                document.getElementById('ai-output').innerText = `"${responseText.trim()}"`;
+                const responseText = data.candidates[0].content.parts[0].text.replace(/\*/g, '').trim();
+                const loadEl = document.getElementById('eich-loading');
+                if (loadEl) loadEl.remove();
+
+                if (!AppState.chatHistory) AppState.chatHistory = [];
+                AppState.chatHistory.push({ sender: 'eich', text: `"${responseText}"` });
+                saveState();
+                renderChatHistory();
                 playSound('heal');
             } catch (e) {
-                console.error("Prof Birk Error:", e);
-                document.getElementById('ai-output').innerText = "Verbindungsabbruch zum Labor! Überprüfe deinen API-Key und dein Internet.";
+                console.error("Prof Eich Error:", e);
+                const loadEl = document.getElementById('eich-loading');
+                if (loadEl) loadEl.remove();
+                AppState.chatHistory.push({ sender: 'eich', text: "Verbindungsabbruch zum Labor! Überprüfe deinen API-Key und dein Internet." });
+                renderChatHistory();
             }
         }
     </script>
