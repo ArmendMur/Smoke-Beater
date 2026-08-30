@@ -303,40 +303,88 @@
         .badge.had-before:not(.unlocked) { border-color: #3b82f6; }
         .badge.had-before:not(.unlocked) .badge-icon { filter: grayscale(70%) opacity(0.5); }
 
-        /* Ash Gekkouga Water Shuriken Breathing Visuals */
+        /* 4-7-8 Breathing Dojo / Hydro Zen Background & Shuriken Visuals */
         .shuriken-base {
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease;
             transform-origin: center center;
+            will-change: transform;
         }
-        .water-pulse-ring {
+        .breathe-circle-base {
+            border-radius: 50%;
+            transform-origin: center center;
+            will-change: transform, background-color, border-color, box-shadow;
+        }
+        .hydro-zen-bg {
+            background: radial-gradient(circle at center, #022c44 0%, #091236 45%, #05021a 100%);
+            position: relative;
+        }
+        .hydro-whirlpool {
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(from 0deg at 50% 50%, rgba(6, 182, 212, 0) 0deg, rgba(6, 182, 212, 0.15) 90deg, rgba(56, 189, 248, 0) 180deg, rgba(6, 182, 212, 0.18) 270deg, rgba(6, 182, 212, 0) 360deg);
+            animation: spin-cw 14s linear infinite;
+            pointer-events: none;
+            filter: blur(25px);
+        }
+        /* Randomly popping Water Ripples across the area (subtle & ambient) */
+        .random-ripple {
             position: absolute;
             border-radius: 50%;
-            border: 2px solid rgba(56, 189, 248, 0.6);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            box-shadow: 0 0 8px rgba(6, 182, 212, 0.25);
             pointer-events: none;
-            animation: water-wave 2s infinite ease-out;
+            opacity: 0;
+            animation: pop-ripple 5s infinite ease-out;
         }
-        @keyframes water-wave {
-            0% { transform: scale(0.6); opacity: 0.8; }
-            100% { transform: scale(1.6); opacity: 0; }
+        @keyframes pop-ripple {
+            0% { transform: scale(0.2); opacity: 0.45; }
+            50% { opacity: 0.25; }
+            100% { transform: scale(2.0); opacity: 0; }
         }
-        @keyframes water-burst {
-            0% { transform: scale(0.7) rotate(0deg); opacity: 1; }
-            50% { transform: scale(1.5) rotate(180deg); opacity: 0.9; filter: drop-shadow(0 0 25px #00f0ff); }
-            100% { transform: scale(1.1) rotate(360deg); opacity: 0.7; }
+        .hydro-bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffffff, rgba(56, 189, 248, 0.7) 60%, rgba(2, 132, 199, 0.9));
+            box-shadow: 0 0 10px #38bdf8;
+            pointer-events: none;
+            animation: bubble-float 3.8s infinite ease-in-out;
         }
-        .anim-water-burst {
-            animation: water-burst 1s ease-out infinite alternate;
+        @keyframes bubble-float {
+            0% { transform: translateY(0) scale(0.6); opacity: 0; }
+            20% { opacity: 0.9; transform: translateY(-10px) scale(1.1); }
+            80% { opacity: 0.7; transform: translateY(-40px) scale(0.9); }
+            100% { transform: translateY(-60px) scale(0.4); opacity: 0; }
+        }
+        .ninja-sparkle {
+            position: absolute;
+            color: #00f0ff;
+            font-size: 8px;
+            pointer-events: none;
+            animation: sparkle-twinkle 3s infinite ease-in-out;
+        }
+        @keyframes sparkle-twinkle {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.3) rotate(90deg); opacity: 1; filter: drop-shadow(0 0 6px #00f0ff); }
+            100% { transform: scale(0) rotate(180deg); opacity: 0; }
+        }
+        .pokedex-stat-pill {
+            background: linear-gradient(135deg, rgba(31, 11, 61, 0.9), rgba(15, 5, 30, 0.95));
+            border: 1px solid rgba(124, 58, 237, 0.5);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         /* Continuous rotation animations controlled by JS classes */
-        .spin-fast {
-            animation: spin-cw 0.4s linear infinite;
+        .spin-accel-4s {
+            animation: spin-accelerate 4s cubic-bezier(0.5, 0, 1, 1) infinite;
         }
-        .spin-slow {
-            animation: spin-cw 3.5s linear infinite;
+        .spin-accel-8s {
+            animation: spin-accelerate 8s cubic-bezier(0.5, 0, 1, 1) infinite;
         }
-        .spin-exhale {
-            animation: spin-cw 1.2s ease-out infinite;
+        .spin-ultra-slow {
+            animation: spin-cw 8s linear infinite;
+        }
+        @keyframes spin-accelerate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(1440deg); }
         }
         @keyframes spin-cw {
             from { transform: rotate(0deg); }
@@ -454,9 +502,12 @@
 
         <!-- ACTION MENU & FINANCES -->
         <div class="grid grid-cols-2 gap-3">
-            <button onclick="logSmoke()" class="gba-dialog !border-4 !border-purple-600 p-2 !bg-[#1f0b3d] hover:!bg-[#37146b] active:scale-95 transition-transform flex flex-col items-center justify-center shadow-[0_4px_15px_rgba(124,58,237,0.3)] cursor-pointer">
-                <span class="text-2xl mb-1">🔥</span>
-                <span class="font-pixel text-[6px] text-purple-200 leading-[1.8] text-center font-bold">ATTACKE: RAUCHEN<br>(-20 KP)</span>
+            <button onclick="logSmoke()" class="gba-dialog !border-4 !border-red-600/80 p-2.5 !bg-[#2a0815] hover:!bg-[#3d0d20] active:scale-95 transition-all flex flex-col items-center justify-center shadow-[0_4px_15px_rgba(239,68,68,0.35)] cursor-pointer group">
+                <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">🚬</span>
+                <span class="font-pixel text-[6px] text-red-300 leading-[1.8] text-center font-bold">
+                    EINE GERAUCHT<br>
+                    <span class="text-red-400 font-normal">(-20 KP)</span>
+                </span>
             </button>
             <div class="gba-dialog !border-4 !border-purple-600 p-2 !bg-[#130628] flex flex-col justify-center items-center">
                 <span class="font-pixel text-[6px] text-purple-300 mb-1 tracking-wider">KOSTEN (GELOGGT)</span>
@@ -470,7 +521,10 @@
         <!-- TRAINER CARD (BADGES) -->
         <div class="gba-dialog !border-4 p-3 !bg-[#130628]">
             <h2 class="font-pixel text-[8px] text-cyan-300 mb-3 border-b-2 border-[#4c1d95] pb-2 flex justify-between items-center">
-                <span>TRAINER-PASS</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs">🪪</span>
+                    <span>TRAINER-PASS</span>
+                </div>
                 <div class="flex gap-2 items-center">
                     <button id="btn-champ" onclick="showChampionModal()" class="hidden-app bg-cyan-500 text-purple-950 font-bold border border-cyan-300 px-1 py-0.5 rounded text-[5px] animate-pulse cursor-pointer">RUHMESHALLE</button>
                     <span class="text-purple-300">ORDEN</span>
@@ -481,23 +535,52 @@
             </div>
         </div>
 
-        <!-- ASH-GRENINJA WATER SHURIKEN (CRAVING) -->
-        <div class="gba-dark-box p-4 flex flex-col items-center relative overflow-hidden min-h-[220px]">
-             <div class="flex justify-between items-center w-full border-b border-[#4c1d95] pb-2 mb-3">
-                 <h2 class="font-pixel text-[8px] text-cyan-300 tracking-wider">WASSER-SHURIKEN (CRAVING)</h2>
-                 <span class="font-pixel text-[6px] text-purple-300">4-7-8 FOKUS</span>
+        <!-- 4-7-8 ATEMÜBUNG (CRAVING) -->
+        <div class="gba-dark-box p-4 flex flex-col items-center relative overflow-hidden min-h-[250px] hydro-zen-bg border-2 border-cyan-400/60 shadow-[0_0_30px_rgba(6,182,212,0.35)]">
+             <!-- Background Ninja Whirlpool & Distributed Dynamic FX -->
+             <div class="absolute inset-0 pointer-events-none overflow-hidden">
+                 <!-- Rotating Conic Hydro Whirlpool -->
+                 <div class="hydro-whirlpool"></div>
+
+                 <!-- Distributed Random Water Ripple Waves -->
+                 <div class="random-ripple w-16 h-16 top-6 left-8" style="animation-delay: 0s; animation-duration: 4.5s;"></div>
+                 <div class="random-ripple w-20 h-20 bottom-10 right-10" style="animation-delay: 1.5s; animation-duration: 5.2s;"></div>
+                 <div class="random-ripple w-14 h-14 top-12 right-12" style="animation-delay: 2.8s; animation-duration: 4.0s;"></div>
+                 <div class="random-ripple w-16 h-16 bottom-6 left-12" style="animation-delay: 3.5s; animation-duration: 4.8s;"></div>
+
+                 <!-- Atmospheric radial glow lines -->
+                 <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-500/15 via-blue-950/40 to-transparent"></div>
+                 <!-- Ninja Shuriken Star-Grid Matrix -->
+                 <div class="absolute inset-0 bg-[radial-gradient(#00f0ff_1.5px,transparent_1.5px)] [background-size:20px_20px] opacity-25"></div>
+
+                 <!-- Floating Water Bubbles / Chakra Orbs -->
+                 <div class="hydro-bubble w-3 h-3 left-6 bottom-6" style="animation-delay: 0s; animation-duration: 3.5s;"></div>
+                 <div class="hydro-bubble w-2 h-2 right-8 bottom-10" style="animation-delay: 1.2s; animation-duration: 4.2s;"></div>
+                 <div class="hydro-bubble w-4 h-4 left-14 bottom-16" style="animation-delay: 2.1s; animation-duration: 5.0s;"></div>
+                 <div class="hydro-bubble w-2.5 h-2.5 right-16 bottom-4" style="animation-delay: 0.7s; animation-duration: 3.8s;"></div>
+
+                 <!-- Twinkling Ninja Sparkles -->
+                 <div class="ninja-sparkle top-8 left-16" style="animation-delay: 0.5s;">✦</div>
+                 <div class="ninja-sparkle top-14 right-8" style="animation-delay: 1.8s;">✧</div>
+                 <div class="ninja-sparkle bottom-14 left-8" style="animation-delay: 2.4s;">✦</div>
+                 <div class="ninja-sparkle bottom-8 right-20" style="animation-delay: 1.1s;">✧</div>
+             </div>
+
+             <div class="flex justify-between items-center w-full border-b border-cyan-500/40 pb-2 mb-2 relative z-10">
+                 <div class="flex items-center gap-2">
+                     <span class="text-cyan-300 text-xs">💧</span>
+                     <h2 class="font-pixel text-[8px] text-cyan-300 tracking-wider">WASSER-SHURIKEN ATEMÜBUNG</h2>
+                 </div>
+                 <span class="font-pixel text-[6px] text-cyan-300 bg-cyan-950/90 px-2.5 py-1 rounded border border-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.5)]">4-7-8 FOKUS</span>
              </div>
              
-             <!-- Ash Gekkouga Giant Water Shuriken -->
-             <div class="relative w-40 h-40 flex items-center justify-center cursor-pointer select-none" onclick="toggleBreathe()">
-                 <!-- Water Pulse Ripple FX -->
-                 <div id="shuriken-ripple" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0">
-                     <div class="water-pulse-ring w-32 h-32"></div>
-                     <div class="water-pulse-ring w-24 h-24" style="animation-delay: 0.6s;"></div>
-                 </div>
-
-                 <!-- Outer Ninja Shuriken Blade Layer (Ash-Greninja Style Cyan/Azure SVG) -->
-                 <div id="shuriken-layer-outer" class="absolute w-36 h-36 shuriken-base flex items-center justify-center text-cyan-400">
+             <!-- 4-7-8 Exercise: Circle in Background + Shuriken in Foreground -->
+             <div class="relative w-44 h-44 flex items-center justify-center cursor-pointer select-none my-1" onclick="toggleBreathe()">
+                 <!-- Background Animated Scaling Circle -->
+                 <div id="breathe-circle" class="absolute w-36 h-36 breathe-circle-base bg-cyan-500/20 border-2 border-cyan-400 shadow-[0_0_25px_rgba(6,182,212,0.5)] z-0"></div>
+                 
+                 <!-- Outer Shuriken Blade Layer -->
+                 <div id="shuriken-layer-outer" class="absolute w-36 h-36 shuriken-base flex items-center justify-center text-cyan-400 z-10">
                      <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_0_12px_rgba(6,182,212,0.8)]">
                          <!-- 4 Giant Curved Hydro Water Blades -->
                          <path d="M50,4 C54,26 74,46 96,50 C74,54 54,74 50,96 C46,74 26,54 4,50 C26,46 46,26 50,4 Z" fill="url(#shuriken-outer-grad)"/>
@@ -514,41 +597,62 @@
                  </div>
 
                  <!-- Inner Swirling Water Vortex Blade -->
-                 <div id="shuriken-layer-inner" class="absolute w-24 h-24 shuriken-base flex items-center justify-center text-white" style="transform: rotate(45deg);">
+                 <div id="shuriken-layer-inner" class="absolute w-24 h-24 shuriken-base flex items-center justify-center text-white z-10" style="transform: rotate(45deg);">
                      <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]">
                          <polygon points="50,6 62,38 94,50 62,62 50,94 38,62 6,50 38,38" fill="#e0f2fe" opacity="0.9"/>
                          <circle cx="50" cy="50" r="14" fill="#0284c7" stroke="#ffffff" stroke-width="3"/>
                          <circle cx="50" cy="50" r="6" fill="#ffffff"/>
                      </svg>
                  </div>
-
-                 <!-- Center Glow Orb -->
-                 <div id="shuriken-glow" class="absolute w-12 h-12 rounded-full bg-cyan-400 blur-md opacity-40 shuriken-base"></div>
                  
                  <!-- Center Text Information -->
                  <div class="relative z-20 text-center pointer-events-none">
                      <span id="breathe-sec" class="font-pixel text-xl text-white block drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">START</span>
-                     <span id="breathe-text" class="font-pixel text-[6px] text-cyan-200 mt-1 block tracking-widest bg-black/60 px-1 py-0.5 rounded border border-cyan-500/40">TIPPEN</span>
+                     <span id="breathe-text" class="font-pixel text-[6px] text-cyan-200 mt-1 block tracking-widest bg-black/75 px-2 py-0.5 rounded border border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.4)]">TIPPEN</span>
                  </div>
              </div>
 
              <!-- Breathing guidance subtext -->
-             <p id="breathe-desc" class="font-pixel text-[6px] text-purple-300 mt-3 text-center">
+             <p id="breathe-desc" class="font-pixel text-[6px] text-cyan-200 mt-2 text-center relative z-10 bg-purple-950/60 px-3 py-1 rounded border border-purple-800/40">
                  Tippe auf das Shuriken, wenn dich Rauch-Craving überkommt.
              </p>
         </div>
 
-        <!-- ANALYTICS CHART -->
-        <div class="gba-dialog !border-4 p-3 !bg-[#130628]">
+        <!-- ANALYTICS CHART & POKÉDEX STATS -->
+        <div class="gba-dialog !border-4 p-3 !bg-[#130628] shadow-[0_0_20px_rgba(124,58,237,0.25)]">
             <div class="flex justify-between items-center mb-3 border-b-2 border-[#4c1d95] pb-2">
-                <h2 class="font-pixel text-[8px] text-cyan-300">POKé-DEX STATS</h2>
+                <div class="flex items-center gap-2">
+                    <span class="text-yellow-400 text-xs">📊</span>
+                    <h2 class="font-pixel text-[8px] text-cyan-300">POKé-DEX ANALYTIK</h2>
+                </div>
                 <div class="flex gap-1">
-                    <button onclick="setChartMode('today'); playSound('click');" id="btn-chart-today" class="font-pixel text-[6px] px-2 py-1.5 bg-[#7c3aed] text-white rounded shadow-sm">24H</button>
-                    <button onclick="setChartMode('week'); playSound('click');" id="btn-chart-week" class="font-pixel text-[6px] px-2 py-1.5 bg-[#1f0b3d] text-purple-300 rounded shadow-sm">7T</button>
-                    <button onclick="setChartMode('month'); playSound('click');" id="btn-chart-month" class="font-pixel text-[6px] px-2 py-1.5 bg-[#1f0b3d] text-purple-300 rounded shadow-sm">4W</button>
+                    <button onclick="setChartMode('today'); playSound('click');" id="btn-chart-today" class="font-pixel text-[6px] px-2 py-1.5 bg-[#7c3aed] text-white rounded shadow-sm transition-all hover:brightness-110">24H</button>
+                    <button onclick="setChartMode('week'); playSound('click');" id="btn-chart-week" class="font-pixel text-[6px] px-2 py-1.5 bg-[#1f0b3d] text-purple-300 rounded shadow-sm transition-all hover:brightness-110">7T</button>
+                    <button onclick="setChartMode('month'); playSound('click');" id="btn-chart-month" class="font-pixel text-[6px] px-2 py-1.5 bg-[#1f0b3d] text-purple-300 rounded shadow-sm transition-all hover:brightness-110">4W</button>
                 </div>
             </div>
-            <div class="w-full h-40 relative">
+
+            <!-- 3 Informative Quick Stats Badges -->
+            <div class="grid grid-cols-3 gap-2 mb-3">
+                <div class="pokedex-stat-pill p-2 rounded flex flex-col items-center text-center">
+                    <span class="font-pixel text-[5px] text-purple-300 mb-1">HEUTE</span>
+                    <span id="stat-count-today" class="font-pixel text-[10px] text-cyan-300">0</span>
+                    <span class="font-pixel text-[4px] text-purple-400 mt-0.5">ZIGARETTEN</span>
+                </div>
+                <div class="pokedex-stat-pill p-2 rounded flex flex-col items-center text-center">
+                    <span class="font-pixel text-[5px] text-purple-300 mb-1">GESPART</span>
+                    <span id="stat-money-saved" class="font-pixel text-[10px] text-emerald-400">0,00€</span>
+                    <span class="font-pixel text-[4px] text-purple-400 mt-0.5">ERSPARNIS</span>
+                </div>
+                <div class="pokedex-stat-pill p-2 rounded flex flex-col items-center text-center">
+                    <span class="font-pixel text-[5px] text-purple-300 mb-1">NICHT GERAUCHT</span>
+                    <span id="stat-avoided-count" class="font-pixel text-[10px] text-amber-300">0</span>
+                    <span class="font-pixel text-[4px] text-purple-400 mt-0.5">VERMIEDEN</span>
+                </div>
+            </div>
+
+            <!-- Canvas Chart with Styled Container -->
+            <div class="w-full h-44 relative bg-[#0b0318] p-2 rounded border border-purple-900/60 shadow-inner">
                 <canvas id="smokeChart"></canvas>
             </div>
         </div>
@@ -562,7 +666,6 @@
                      </div>
                      <div>
                          <h2 class="font-pixel text-[8px] text-cyan-300 leading-[1.6]">PROF. EICHS<br>VERHALTENS-LABOR</h2>
-                         <span class="font-pixel text-[5px] text-emerald-400">STATUS: BEREIT ZUM DIALOG</span>
                      </div>
                  </div>
                  <button onclick="clearEichChat()" class="bg-[#1f0b3d] hover:bg-red-950/80 border border-purple-600 hover:border-red-500 text-purple-300 hover:text-red-300 font-pixel text-[5px] px-2 py-1.5 rounded active:scale-95 transition-all" title="Chatverlauf leeren">
@@ -589,12 +692,9 @@
              </form>
              
              <!-- Quick Action: Analyze DEX Patterns -->
-             <div class="mt-2 pt-2 border-t border-[#4c1d95]/50 flex gap-2">
-                 <button onclick="analyzePatterns(); playSound('click');" class="flex-1 bg-[#7c3aed] hover:bg-[#a855f7] border-b-2 border-[#4c1d95] rounded text-white font-pixel text-[6px] py-2 active:scale-95 transition-all">
+             <div class="mt-2 pt-2 border-t border-[#4c1d95]/50 flex">
+                 <button onclick="analyzePatterns(); playSound('click');" class="w-full bg-[#7c3aed] hover:bg-[#a855f7] border-b-2 border-[#4c1d95] rounded text-white font-pixel text-[6px] py-2 active:scale-95 transition-all">
                      📊 MUSTER ANALYSIEREN
-                 </button>
-                 <button onclick="sendQuickPrompt('Ich habe gerade extremes Craving, was soll ich tun?'); playSound('click');" class="bg-[#1f0b3d] hover:bg-[#37146b] border border-cyan-500/50 rounded text-cyan-300 font-pixel text-[5px] px-2 py-2 active:scale-95 transition-all">
-                     ⚡ CRAVING NOTFALL
                  </button>
              </div>
         </div>
@@ -1913,53 +2013,167 @@
                 });
             }
 
+            // Update Live Pokédex Analytics Badges
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            let todayCount = 0;
+            logs.forEach(ts => { if (ts >= startOfToday) todayCount++; });
+            
+            const lastSmokeTime = (AppState.smokeLogs && AppState.smokeLogs.length > 0) ? AppState.smokeLogs[AppState.smokeLogs.length - 1] : (AppState.startDate || Date.now());
+            const smokeFreeSecs = Math.max(0, Math.floor((now.getTime() - lastSmokeTime) / 1000));
+            const cigsPerPack = Number(AppState.cigsPerPack) || 20;
+            const pricePerPack = Number(AppState.pricePerPack) || 10.0;
+            const cigsPerDay = Number(AppState.cigsPerDay) || 20;
+            const cigCost = cigsPerPack > 0 ? (pricePerPack / cigsPerPack) : 0.50;
+            const smokedPerSec = cigsPerDay / 86400;
+            const avoidedCount = Math.max(0, Math.floor(smokeFreeSecs * smokedPerSec));
+            const savedMoney = Math.max(0, avoidedCount * cigCost);
+
+            const elToday = document.getElementById('stat-count-today');
+            const elSaved = document.getElementById('stat-money-saved');
+            const elAvoided = document.getElementById('stat-avoided-count');
+            if (elToday) elToday.innerText = todayCount;
+            if (elSaved) elSaved.innerText = `${savedMoney.toFixed(2).replace('.', ',')}€`;
+            if (elAvoided) elAvoided.innerText = avoidedCount;
+
             if (chartInstance) chartInstance.destroy();
+            
+            // Gradient bar styling
+            const chartGradient = ctx.createLinearGradient(0, 0, 0, 160);
+            chartGradient.addColorStop(0, '#00f0ff');
+            chartGradient.addColorStop(0.5, '#0284c7');
+            chartGradient.addColorStop(1, '#1e1b4b');
+
             chartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
                         data: data,
-                        backgroundColor: '#06b6d4',
-                        borderWidth: 2,
+                        backgroundColor: chartGradient,
+                        borderWidth: 1.5,
                         borderColor: '#38bdf8',
-                        borderRadius: 0,
-                        barPercentage: 0.8
+                        borderRadius: 4,
+                        borderSkipped: false,
+                        barPercentage: 0.75
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: true, ticks: { stepSize: 1, color: '#e5e7eb', font: { family: "'Press Start 2P'", size: 6 } }, grid: { color: 'rgba(255,255,255,0.1)' }, border: {display: false} },
-                        x: { ticks: { color: '#e5e7eb', font: { family: "'Press Start 2P'", size: 5 } }, grid: { display: false }, border: {display: false} }
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { 
+                                stepSize: 1, 
+                                color: '#93c5fd', 
+                                font: { family: "'Press Start 2P'", size: 6 } 
+                            }, 
+                            grid: { color: 'rgba(56, 189, 248, 0.12)' }, 
+                            border: {display: false} 
+                        },
+                        x: { 
+                            ticks: { 
+                                color: '#c4b5fd', 
+                                font: { family: "'Press Start 2P'", size: 6 } 
+                            }, 
+                            grid: { display: false }, 
+                            border: {display: false} 
+                        }
                     },
-                    plugins: { legend: { display: false }, tooltip: { bodyFont: {family: "'Press Start 2P'", size:8}, titleFont: {family: "'Press Start 2P'", size:8} } },
-                    animation: { duration: 0 } 
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { 
+                            backgroundColor: '#1e103a',
+                            titleColor: '#00f0ff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#7c3aed',
+                            borderWidth: 1,
+                            padding: 6,
+                            displayColors: false,
+                            bodyFont: {family: "'Press Start 2P'", size:7}, 
+                            titleFont: {family: "'Press Start 2P'", size:7} 
+                        } 
+                    },
+                    animation: { duration: 250 } 
                 }
             });
         }
 
-        // ================= ASH-GEKKOUGA SHURIKEN BREATHE (4-7-8) =================
+        // ================= 4-7-8 BREATHE CIRCLE & SHURIKEN (CRAVING) =================
         let breatheSec = 0;
         let breathePhase = 0; // 0=off, 1=inhale (4s), 2=hold (7s), 3=exhale (8s)
+        let phaseStartTime = 0;
+        let phaseDuration = 4000;
+        let breatheRafId = null;
+        let shurikenOuterAngle = 0;
+        let shurikenInnerAngle = 45;
+        let shurikenSpeed = 0;
+        let shurikenScale = 1.0;
+        let targetShurikenScale = 1.0;
+
+        function updateShurikenPhysics() {
+            if (!isBreathing) return;
+            const now = performance.now();
+            const elapsed = Math.min(phaseDuration, now - phaseStartTime);
+            const progress = Math.max(0, Math.min(1, elapsed / phaseDuration)); // 0.0 to 1.0
+
+            let desiredSpeed = 0;
+            let desiredScale = 1.0;
+
+            if (breathePhase === 1) {
+                // Einatmen (4s): Schöne dynamische Beschleunigung im Uhrzeigersinn (+0.3 bis +5.2 deg/frame)
+                desiredSpeed = 0.3 + (4.9 * Math.sin(progress * Math.PI * 0.5));
+                // Weiche kontinuierliche Schrumpfung (1.0 -> 0.85)
+                desiredScale = 1.0 - (0.15 * progress);
+            } else if (breathePhase === 2) {
+                // Halten (7s): SOFORT extrem langsam (0.08 deg/frame)
+                desiredSpeed = 0.08;
+                desiredScale = 0.85;
+            } else if (breathePhase === 3) {
+                // Ausatmen (8s): Dreht sich kontinuierlich über die vollen 8s IMMER SCHNELLER gegen den Uhrzeigersinn (kein Abbremsen!)
+                desiredSpeed = -(0.5 + (5.5 * progress));
+                // Kontinuierliche Vergrößerung von 0.85 auf 1.15
+                desiredScale = 0.85 + (0.30 * progress);
+            }
+
+            // Butterweiche Trägheits-Interpolation (schnelleres Ansprechen beim Halten)
+            const speedLerp = (breathePhase === 2) ? 0.20 : 0.08;
+            shurikenSpeed += (desiredSpeed - shurikenSpeed) * speedLerp;
+            shurikenScale += (desiredScale - shurikenScale) * 0.08;
+
+            shurikenOuterAngle = (shurikenOuterAngle + shurikenSpeed + 360) % 360;
+            shurikenInnerAngle = (shurikenInnerAngle - (shurikenSpeed * 1.12) + 360) % 360;
+
+            const outer = document.getElementById('shuriken-layer-outer');
+            const inner = document.getElementById('shuriken-layer-inner');
+            if (outer) outer.style.transform = `scale(${shurikenScale.toFixed(3)}) rotate(${shurikenOuterAngle.toFixed(2)}deg)`;
+            if (inner) inner.style.transform = `scale(${(shurikenScale * 0.95).toFixed(3)}) rotate(${shurikenInnerAngle.toFixed(2)}deg)`;
+
+            breatheRafId = requestAnimationFrame(updateShurikenPhysics);
+        }
         
         function toggleBreathe() {
             playSound('click');
             if(isBreathing) {
                 isBreathing = false;
                 clearInterval(breatheInterval);
+                if (breatheRafId) cancelAnimationFrame(breatheRafId);
                 document.getElementById('breathe-sec').innerText = "START";
                 document.getElementById('breathe-text').innerText = "TIPPEN";
                 document.getElementById('breathe-desc').innerText = "Tippe auf das Shuriken, wenn dich Rauch-Craving überkommt.";
-                setShurikenPhase('off');
+                setBreathePhase('off');
                 return;
             }
             isBreathing = true;
             breathePhase = 1;
             breatheSec = 4;
-            setShurikenPhase('inhale');
+            phaseDuration = 4000;
+            phaseStartTime = performance.now();
+            setBreathePhase('inhale');
             updateBreatheUI();
+            
+            if (breatheRafId) cancelAnimationFrame(breatheRafId);
+            breatheRafId = requestAnimationFrame(updateShurikenPhysics);
             
             breatheInterval = setInterval(() => {
                 breatheSec--;
@@ -1967,77 +2181,78 @@
                     if(breathePhase === 1) { 
                         breathePhase = 2; 
                         breatheSec = 7; 
-                        setShurikenPhase('hold'); 
+                        phaseDuration = 7000;
+                        phaseStartTime = performance.now();
+                        setBreathePhase('hold'); 
                     } else if(breathePhase === 2) { 
                         breathePhase = 3; 
                         breatheSec = 8; 
-                        setShurikenPhase('exhale'); 
+                        phaseDuration = 8000;
+                        phaseStartTime = performance.now();
+                        setBreathePhase('exhale'); 
                     } else if(breathePhase === 3) { 
                         breathePhase = 1; 
                         breatheSec = 4; 
-                        setShurikenPhase('inhale'); 
+                        phaseDuration = 4000;
+                        phaseStartTime = performance.now();
+                        setBreathePhase('inhale'); 
                     }
                 }
                 updateBreatheUI();
             }, 1000);
         }
 
-        function setShurikenPhase(phase) {
+        function setBreathePhase(phase) {
+            const circle = document.getElementById('breathe-circle');
+            const desc = document.getElementById('breathe-desc');
             const outer = document.getElementById('shuriken-layer-outer');
             const inner = document.getElementById('shuriken-layer-inner');
-            const glow = document.getElementById('shuriken-glow');
-            const ripple = document.getElementById('shuriken-ripple');
-            const desc = document.getElementById('breathe-desc');
+            if(!circle) return;
 
-            // Reset animation classes
-            outer.classList.remove('spin-fast', 'spin-slow', 'spin-exhale', 'anim-water-burst');
-            inner.classList.remove('spin-fast', 'spin-slow', 'spin-exhale');
-            ripple.classList.add('opacity-0');
-            
             if(phase === 'off') {
-                outer.style.transform = 'scale(1) rotate(0deg)';
-                inner.style.transform = 'scale(1) rotate(45deg)';
-                glow.style.transform = 'scale(1)';
-                glow.style.opacity = '0.4';
-                glow.className = 'absolute w-12 h-12 rounded-full bg-cyan-400 blur-md opacity-40 shuriken-base';
+                shurikenSpeed = 0;
+                targetShurikenScale = 1.0;
+                shurikenScale = 1.0;
+                circle.style.transition = 'transform 0.6s ease-out, background-color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease';
+                circle.style.transform = 'scale(1)';
+                circle.style.borderColor = '#22d3ee';
+                circle.style.backgroundColor = 'rgba(6, 182, 212, 0.2)';
+                circle.style.boxShadow = '0 0 25px rgba(6, 182, 212, 0.5)';
+                if(outer) outer.style.transform = 'scale(1) rotate(0deg)';
+                if(inner) inner.style.transform = 'scale(1) rotate(45deg)';
             } else if(phase === 'inhale') {
-                // Einatmen (4 Sekunden): Durchgehender, sanfter Akkord-Aufstieg
+                // Einatmen (4s): Klares Tiefblau/Cyan – Farbe schaltet zügig in 0.5s um, Skalierung läuft 4s
                 playSound('breathe_long_in');
-                outer.classList.add('spin-fast');
-                inner.classList.add('spin-fast');
-                outer.style.transform = 'scale(1.25)';
-                inner.style.transform = 'scale(1.15)';
-                glow.style.transform = 'scale(1.8)';
-                glow.style.opacity = '0.8';
-                glow.className = 'absolute w-16 h-16 rounded-full bg-cyan-300 blur-lg shuriken-base';
-                ripple.classList.remove('opacity-0');
+                circle.style.transition = 'transform 4s linear, background-color 0.5s ease-out, border-color 0.5s ease-out, box-shadow 0.5s ease-out';
+                circle.style.transform = 'scale(0.70)';
+                circle.style.borderColor = '#38bdf8';
+                circle.style.backgroundColor = 'rgba(56, 189, 248, 0.4)';
+                circle.style.boxShadow = '0 0 30px rgba(56, 189, 248, 0.85)';
+
                 document.getElementById('breathe-text').innerText = "EINATMEN";
-                desc.innerText = "Tief durch die Nase einatmen... Das Wasser-Shuriken lädt Chakra auf!";
+                if(desc) desc.innerText = "Tief durch die Nase einatmen... Das Shuriken dreht sich im Uhrzeigersinn schneller.";
             } else if(phase === 'hold') {
-                // Halten (7 Sekunden): Durchgehender, warmer Meditations-Klang
+                // Halten (7s): Knackiges Smaragdgrün – Farbe schaltet sofort in 0.4s um
                 playSound('breathe_long_hold');
-                outer.classList.add('spin-slow');
-                inner.classList.add('spin-slow');
-                outer.style.transform = 'scale(1.1)';
-                inner.style.transform = 'scale(0.95)';
-                glow.style.transform = 'scale(2.2)';
-                glow.style.opacity = '0.9';
-                glow.className = 'absolute w-16 h-16 rounded-full bg-emerald-400 blur-md shuriken-base';
+                circle.style.transition = 'transform 0.3s ease, background-color 0.4s ease-out, border-color 0.4s ease-out, box-shadow 0.4s ease-out';
+                circle.style.transform = 'scale(0.70)';
+                circle.style.borderColor = '#10b981';
+                circle.style.backgroundColor = 'rgba(16, 185, 129, 0.45)';
+                circle.style.boxShadow = '0 0 35px rgba(16, 185, 129, 0.9)';
+
                 document.getElementById('breathe-text').innerText = "HALTEN";
-                desc.innerText = "Luft anhalten... Volle Ruhe und Konzentration auf dein Ziel.";
+                if(desc) desc.innerText = "Luft anhalten... Volle Ruhe und Konzentration auf dein Ziel.";
             } else if(phase === 'exhale') {
-                // Ausatmen (8 Sekunden): Durchgehender, tiefer Entspannungs-Klangteppich
+                // Ausatmen (8s): Strahlendes Neon-Cyan/Aqua – Farbe schaltet sofort in 0.5s um, Skalierung läuft 8s
                 playSound('breathe_long_out');
-                outer.classList.add('anim-water-burst');
-                inner.classList.add('spin-exhale');
-                outer.style.transform = 'scale(1.4)';
-                inner.style.transform = 'scale(1.3)';
-                glow.style.transform = 'scale(2.5)';
-                glow.style.opacity = '0.7';
-                glow.className = 'absolute w-20 h-20 rounded-full bg-cyan-400 blur-xl shuriken-base';
-                ripple.classList.remove('opacity-0');
+                circle.style.transition = 'transform 8s linear, background-color 0.5s ease-out, border-color 0.5s ease-out, box-shadow 0.5s ease-out';
+                circle.style.transform = 'scale(1.35)';
+                circle.style.borderColor = '#00f0ff';
+                circle.style.backgroundColor = 'rgba(6, 182, 212, 0.45)';
+                circle.style.boxShadow = '0 0 50px rgba(0, 240, 255, 0.95)';
+
                 document.getElementById('breathe-text').innerText = "AUSATMEN";
-                desc.innerText = "Langsam durch den Mund auspusten... Die Craving-Welle löst sich auf!";
+                if(desc) desc.innerText = "Langsam durch den Mund ausatmen... Das Shuriken kehrt die Drehung sanft um.";
             }
         }
 
