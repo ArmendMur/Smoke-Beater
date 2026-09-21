@@ -1,13 +1,13 @@
-const CACHE_NAME = 'smoke-beater-v2.1';
+const CACHE_NAME = 'smoke-beater-v3.0';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
+    './manifest.json',
     './gekkouga.png',
-    './eich.png',
     './Pokeball.png',
     'https://cdn.tailwindcss.com',
     'https://cdn.jsdelivr.net/npm/chart.js',
-    'https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;800&display=swap'
+    'https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap'
 ];
 
 self.addEventListener('install', event => {
@@ -30,34 +30,45 @@ self.addEventListener('activate', event => {
     );
 });
 
-self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.match(event.request).then(cachedResponse => {
-            if (cachedResponse) {
-                fetch(event.request).then(networkResponse => {
-                    if (networkResponse && networkResponse.status === 200) {
-                        caches.open(CACHE_NAME).then(cache => cache.put(event.request, networkResponse));
-                    }
-                }).catch(() => {});
-                return cachedResponse;
-            }
-            return fetch(event.request);
-        })
-    );
+self.addEventListener('message', event => {
+    if (event.data && event.data.action === 'skipWaiting') {
+        self.skipWaiting();
+    }
 });
 
-self.addEventListener('notificationclick', event => {
-    event.notification.close();
-    event.waitUntil(
-        clients.matchAll({ type: 'window' }).then(clientList => {
-            for (let client of clientList) {
-                if (client.url && 'focus' in client) {
-                    return client.focus();
+self.addEventListener('fetch', event => {
+    // Navigation requests (HTML document): Network First, fallback to Cache
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request)
+                .then(networkResponse => {
+                    if (networkResponse && networkResponse.status === 200) {
+                        const responseClone = networkResponse.clone();
+                        caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+                    }
+                    return networkResponse;
+                })
+                .catch(() => {
+                    return caches.match(event.request).then(cachedResponse => {
+                        return cachedResponse || caches.match('./index.html');
+                    });
+                })
+        );
+        return;
+    }
+
+    // Static assets: Cache First / Stale-While-Revalidate
+    event.respondWith(
+        caches.match(event.request).then(cachedResponse => {
+            const fetchPromise = fetch(event.request).then(networkResponse => {
+                if (networkResponse && networkResponse.status === 200) {
+                    const responseClone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
                 }
-            }
-            if (clients.openWindow) {
-                return clients.openWindow('./');
-            }
+                return networkResponse;
+            }).catch(() => {});
+
+            return cachedResponse || fetchPromise;
         })
     );
 });

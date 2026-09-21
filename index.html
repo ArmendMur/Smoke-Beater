@@ -518,23 +518,6 @@
             </div>
         </div>
 
-        <!-- TRAINER CARD (BADGES) -->
-        <div class="gba-dialog !border-4 p-3 !bg-[#130628]">
-            <h2 class="font-pixel text-[8px] text-cyan-300 mb-3 border-b-2 border-[#4c1d95] pb-2 flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs">🪪</span>
-                    <span>TRAINER-PASS</span>
-                </div>
-                <div class="flex gap-2 items-center">
-                    <button id="btn-champ" onclick="showChampionModal()" class="hidden-app bg-cyan-500 text-purple-950 font-bold border border-cyan-300 px-1 py-0.5 rounded text-[5px] animate-pulse cursor-pointer">RUHMESHALLE</button>
-                    <span class="text-purple-300">ORDEN</span>
-                </div>
-            </h2>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="badges-container">
-                <!-- Badges JS Injected -->
-            </div>
-        </div>
-
         <!-- 4-7-8 ATEMÜBUNG (CRAVING) -->
         <div class="gba-dark-box p-4 flex flex-col items-center relative overflow-hidden min-h-[250px] hydro-zen-bg border-2 border-cyan-400/60 shadow-[0_0_30px_rgba(6,182,212,0.35)]">
              <!-- Background Ninja Whirlpool & Distributed Dynamic FX -->
@@ -618,6 +601,35 @@
              </p>
         </div>
 
+        <!-- TRAINER CARD (BADGES) -->
+        <div class="gba-dialog !border-4 p-3 !bg-[#130628]">
+            <h2 class="font-pixel text-[8px] text-cyan-300 mb-3 border-b-2 border-[#4c1d95] pb-2 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs">🪪</span>
+                    <span>TRAINER-PASS</span>
+                </div>
+                <div class="flex gap-2 items-center">
+                    <button id="btn-champ" onclick="showChampionModal()" class="hidden-app bg-cyan-500 text-purple-950 font-bold border border-cyan-300 px-1 py-0.5 rounded text-[5px] animate-pulse cursor-pointer">RUHMESHALLE</button>
+                    <span class="text-purple-300">ORDEN</span>
+                </div>
+            </h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="badges-container">
+                <!-- Badges JS Injected -->
+            </div>
+            
+            <!-- APP UPDATE & STATUS IM PROFIL -->
+            <div class="mt-3 pt-2.5 border-t border-[#4c1d95] flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="app-version-tag" class="font-pixel text-[6px] text-purple-300">v3.0 (AKTUELL)</span>
+                </div>
+                <button id="btn-check-update" onclick="checkForAppUpdates()" class="bg-[#1f0b3d] hover:bg-cyan-950 border border-cyan-400/80 text-cyan-300 active:scale-95 font-pixel text-[6px] px-2.5 py-1.5 rounded transition-all flex items-center gap-1 cursor-pointer shadow-[0_0_10px_rgba(6,182,212,0.2)]">
+                    <span>🔄</span>
+                    <span id="update-btn-label">APP AKTUALISIEREN</span>
+                </button>
+            </div>
+        </div>
+
         <!-- ANALYTICS CHART & POKÉDEX STATS -->
         <div class="gba-dialog !border-4 p-3 !bg-[#130628] shadow-[0_0_20px_rgba(124,58,237,0.25)]">
             <div class="flex justify-between items-center mb-3 border-b-2 border-[#4c1d95] pb-2">
@@ -651,48 +663,12 @@
                 <canvas id="smokeChart"></canvas>
             </div>
         </div>
+    </div>
 
-        <!-- AI PROFESSOR EICH INTERACTIVE LAB & CHAT -->
-        <div class="gba-dark-box p-4 relative">
-             <div class="flex items-center justify-between gap-3 mb-3 border-b-2 border-[#4c1d95] pb-2">
-                 <div class="flex items-center gap-3">
-                     <div class="w-12 h-12 flex-shrink-0 flex items-end justify-center bg-[#130628] border-2 border-cyan-500 rounded-lg shadow-[0_0_10px_rgba(6,182,212,0.4)] overflow-hidden">
-                         <img src="eich.png" alt="Prof. Eich" class="w-full h-full object-contain object-bottom">
-                     </div>
-                     <div>
-                         <h2 class="font-pixel text-[8px] text-cyan-300 leading-[1.6]">PROF. EICHS<br>VERHALTENS-LABOR</h2>
-                     </div>
-                 </div>
-                 <button onclick="clearEichChat()" class="bg-[#1f0b3d] hover:bg-red-950/80 border border-purple-600 hover:border-red-500 text-purple-300 hover:text-red-300 font-pixel text-[5px] px-2 py-1.5 rounded active:scale-95 transition-all" title="Chatverlauf leeren">
-                     🗑️ LEEREN
-                 </button>
-             </div>
-
-             <!-- Chat history display -->
-             <div id="ai-chat-box" class="bg-[#130628] border-2 border-[#7c3aed] p-3 rounded mb-3 shadow-inner max-h-48 overflow-y-auto space-y-2">
-                 <div class="text-purple-200">
-                     <span class="font-pixel text-[6px] text-cyan-400 block mb-1">PROF. EICH:</span>
-                     <p id="ai-output" class="font-pixel text-[7px] leading-loose">"Hallo Trainer! Frag mich um Rat bei Rauchdrang, Stress oder lass mich deine POKéDEX-Daten analysieren!"</p>
-                 </div>
-             </div>
-
-             <!-- User Interactive Chat Form -->
-             <form id="eich-chat-form" onsubmit="handleEichChat(event)" class="space-y-2">
-                 <div class="flex gap-2">
-                     <input type="text" id="eich-user-input" placeholder="Antworte Prof. Eich (z.B. Ich habe Stress...)" class="flex-1 bg-[#130628] border-2 border-[#7c3aed] text-white font-pixel text-[7px] p-2 rounded outline-none focus:border-cyan-400 placeholder:text-gray-500">
-                     <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 border-b-2 border-cyan-800 text-white font-pixel text-[6px] px-3 py-2 rounded active:scale-95 transition-all">
-                         SENDEN
-                     </button>
-                 </div>
-             </form>
-             
-             <!-- Quick Action: Analyze DEX Patterns -->
-             <div class="mt-2 pt-2 border-t border-[#4c1d95]/50 flex">
-                 <button onclick="analyzePatterns(); playSound('click');" class="w-full bg-[#7c3aed] hover:bg-[#a855f7] border-b-2 border-[#4c1d95] rounded text-white font-pixel text-[6px] py-2 active:scale-95 transition-all">
-                     📊 MUSTER ANALYSIEREN
-                 </button>
-             </div>
-        </div>
+    <!-- UPDATE TOAST -->
+    <div id="update-toast" class="fixed top-safe left-4 right-4 z-[50] gba-dark-box !border-4 !border-cyan-400 p-3 transform -translate-y-40 opacity-0 transition-all duration-300 flex justify-between items-center shadow-[0_0_20px_rgba(6,182,212,0.6)]">
+        <span id="update-toast-msg" class="font-pixel text-[7px] text-cyan-200 leading-[1.5]">APP WIRD AKTUALISIERT...</span>
+        <button onclick="window.location.reload()" class="bg-cyan-600 border-2 border-cyan-400 text-white font-pixel text-[6px] px-2 py-2 active:scale-95 shadow-md">NEU LADEN</button>
     </div>
 
     <!-- UNDO TOAST -->
@@ -764,57 +740,14 @@
                     <label class="text-purple-300">ZIGARETTEN / SCHACHTEL</label>
                     <input type="number" id="set-cigs-pack" class="w-full bg-[#130628] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
                 </div>
-                <div>
-                    <label class="text-purple-300 flex justify-between items-center">
-                        GEMINI API KEY
-                        <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-cyan-400 underline text-[6px]">KEY HOLEN</a>
-                    </label>
-                    <input type="password" id="set-api" class="w-full bg-[#130628] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm">
-                </div>
-
-                <!-- NOTIFICATIONS DETAILED SECTION -->
-                <div class="border-t border-[#4c1d95] pt-2 space-y-2">
-                    <label class="text-cyan-300 block mb-1">PUSH-BENACHRICHTIGUNGEN</label>
-                    <div class="flex gap-2">
-                        <button type="button" id="btn-toggle-notif" onclick="togglePushNotifications()" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white p-2 rounded border border-cyan-400 text-[6px] font-bold">
-                            🔔 AKTIVIEREN
-                        </button>
-                        <button type="button" onclick="sendTestNotification()" class="bg-[#1f0b3d] hover:bg-[#37146b] text-cyan-300 px-2 py-1 rounded border border-[#7c3aed] text-[6px]">
-                            TEST
-                        </button>
-                    </div>
-                    <span id="notif-status-text" class="text-[5px] text-gray-400 block">STATUS: NICHT AKTIV</span>
-
-                    <!-- Frequency selection -->
-                    <div class="bg-[#130628] p-2 border border-[#7c3aed] rounded space-y-2">
-                        <div>
-                            <label class="text-purple-300 block text-[6px] mb-1">WIE OFT PRO TAG?</label>
-                            <select id="set-notif-freq" onchange="saveNotificationPreferences()" class="w-full bg-[#1f0b3d] border border-cyan-500 text-white font-pixel text-[6px] p-1.5 rounded outline-none">
-                                <option value="1">1x Täglich (Morgens)</option>
-                                <option value="2">2x Täglich (Morgens & Abends)</option>
-                                <option value="3">3x Täglich (Morgens, Mittags, Abends)</option>
-                            </select>
-                        </div>
-
-                        <!-- Categories -->
-                        <div>
-                            <label class="text-purple-300 block text-[6px] mb-1">WELCHE THEMEN?</label>
-                            <div class="space-y-1 text-[6px]">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" id="notif-type-motivation" onchange="saveNotificationPreferences()" class="accent-cyan-400" checked>
-                                    <span class="text-white">🏆 Tägliche Motivation & Streak</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" id="notif-type-cbt" onchange="saveNotificationPreferences()" class="accent-cyan-400" checked>
-                                    <span class="text-white">🧠 KVT-Tipps & Verhaltenspsychologie</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" id="notif-type-craving" onchange="saveNotificationPreferences()" class="accent-cyan-400" checked>
-                                    <span class="text-white">🌊 Craving-Schutz & Atem-Fokus</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+                <!-- APP UPDATE OPTION -->
+                <div class="border-t border-[#4c1d95] pt-3">
+                    <label class="text-cyan-300 block mb-1 text-[6px]">APP-VERSION & AKTUALISIERUNG</label>
+                    <button type="button" onclick="checkForAppUpdates()" class="w-full bg-cyan-700 hover:bg-cyan-600 border border-cyan-400/80 rounded text-white py-2.5 active:scale-95 transition-all text-[7px] flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_10px_rgba(6,182,212,0.3)]">
+                        <span>🔄</span>
+                        <span>APP JETZT AKTUALISIEREN</span>
+                    </button>
+                    <span class="text-[5px] text-purple-300 block mt-1 text-center">Version 3.0 • Lädt neueste Version vom Server</span>
                 </div>
                 
                 <div class="pt-2 flex flex-col gap-2">
@@ -850,20 +783,13 @@
             pricePerPack: 10.0,
             cigsPerPack: 20,
             cigsPerDay: 20,
-            apiKey: '',
             xp: 0,
             hp: 100,
             lastKnownSmokeFreeSecs: 0,
             maxSmokeFreeSecsReached: 0, // Records all-time best streak for badge history!
             championSeen: false,
-            pushEnabled: false,
-            notifFreq: 1, // 1, 2, or 3 times daily
-            notifTypes: { motivation: true, cbt: true, craving: true },
-            lastNotifDay: '',
-            lastNotifSlots: [], // Track slots triggered today ['m', 'a', 'e']
             lastUpdate: Date.now(),
-            startDate: Date.now(),
-            chatHistory: []
+            startDate: Date.now()
         };
 
         let chartMode = 'today';
@@ -1249,10 +1175,46 @@
             loadState();
             initBadgesDOM();
             
-            // Register Service Worker for PWA and Push Notifications
+            // Register Service Worker for PWA with auto-update
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(err => {
-                    console.log('SW Registration error (ignore in offline/preview):', err);
+                navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+                    reg.update().catch(() => {});
+
+                    if (reg.waiting) {
+                        reg.waiting.postMessage({ action: 'skipWaiting' });
+                    }
+
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        if (newWorker) {
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    showUpdateToast("Neues Update verfügbar! App aktualisiert sich...");
+                                    setTimeout(() => window.location.reload(), 1200);
+                                }
+                            });
+                        }
+                    });
+                }).catch(err => {
+                    console.log('SW Registration error:', err);
+                });
+
+                // Auto-refresh when new service worker takes control
+                let refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (!refreshing) {
+                        refreshing = true;
+                        window.location.reload();
+                    }
+                });
+
+                // Check for updates when returning to app
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'visible') {
+                        navigator.serviceWorker.getRegistration().then(reg => {
+                            if (reg) reg.update().catch(() => {});
+                        });
+                    }
                 });
             }
             
@@ -1278,205 +1240,54 @@
             
             startEngine();
             renderChart(chartMode);
-            renderChatHistory();
-            checkDailyNotification();
             
             setInterval(spawnSpore, 1200);
         });
 
-        // ================= PUSH NOTIFICATIONS & DAILY REMINDERS =================
-        async function togglePushNotifications() {
+        // ================= PWA UPDATE UTILITIES =================
+        function showUpdateToast(msg) {
+            const toast = document.getElementById('update-toast');
+            const msgEl = document.getElementById('update-toast-msg');
+            if (msg && msgEl) msgEl.innerText = msg;
+            if (toast) {
+                toast.classList.remove('opacity-0', '-translate-y-40');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                setTimeout(() => {
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                    toast.classList.add('opacity-0', '-translate-y-40');
+                }, 3500);
+            }
+        }
+
+        async function checkForAppUpdates() {
+            const label = document.getElementById('update-btn-label');
+            if (label) label.innerText = "PRÜFE...";
             playSound('click');
-            if (!("Notification" in window)) {
-                alert("Dein Browser unterstützt Push-Benachrichtigungen nicht direkt. Füge die Seite in Safari zum Home-Bildschirm hinzu!");
-                return;
-            }
 
-            if (Notification.permission === "granted") {
-                AppState.pushEnabled = !AppState.pushEnabled;
-                saveState();
-                updateNotifUI();
-                if (AppState.pushEnabled) {
-                    sendTestNotification();
+            try {
+                if ('serviceWorker' in navigator) {
+                    const reg = await navigator.serviceWorker.getRegistration();
+                    if (reg) {
+                        await reg.update();
+                        if (reg.waiting) {
+                            reg.waiting.postMessage({ action: 'skipWaiting' });
+                            showUpdateToast("Update wird angewendet...");
+                            return;
+                        }
+                    }
                 }
-            } else if (Notification.permission !== "denied") {
-                const permission = await Notification.requestPermission();
-                if (permission === "granted") {
-                    AppState.pushEnabled = true;
-                    saveState();
-                    updateNotifUI();
-                    sendTestNotification();
-                } else {
-                    AppState.pushEnabled = false;
-                    saveState();
-                    updateNotifUI();
-                    alert("Benachrichtigungen wurden nicht erlaubt. Du kannst sie in den iOS/Safari-Einstellungen für diese Seite aktivieren.");
+                if ('caches' in window) {
+                    const cacheKeys = await caches.keys();
+                    await Promise.all(cacheKeys.map(k => caches.delete(k)));
                 }
-            } else {
-                alert("Benachrichtigungen sind in deinen Safari-Einstellungen blockiert. Bitte erlaube sie in den iOS-Einstellungen unter Safari.");
-            }
-        }
-
-        function saveNotificationPreferences() {
-            const freqEl = document.getElementById('set-notif-freq');
-            if (freqEl) AppState.notifFreq = parseInt(freqEl.value) || 1;
-            
-            const motEl = document.getElementById('notif-type-motivation');
-            const cbtEl = document.getElementById('notif-type-cbt');
-            const cravEl = document.getElementById('notif-type-craving');
-
-            AppState.notifTypes = {
-                motivation: motEl ? motEl.checked : true,
-                cbt: cbtEl ? cbtEl.checked : true,
-                craving: cravEl ? cravEl.checked : true
-            };
-            saveState();
-        }
-
-        function updateNotifUI() {
-            const btn = document.getElementById('btn-toggle-notif');
-            const statusText = document.getElementById('notif-status-text');
-            if (!btn || !statusText) return;
-
-            // Sync inputs with state
-            const freqEl = document.getElementById('set-notif-freq');
-            if (freqEl && AppState.notifFreq) freqEl.value = String(AppState.notifFreq);
-            
-            if (AppState.notifTypes) {
-                const motEl = document.getElementById('notif-type-motivation');
-                const cbtEl = document.getElementById('notif-type-cbt');
-                const cravEl = document.getElementById('notif-type-craving');
-                if (motEl) motEl.checked = AppState.notifTypes.motivation !== false;
-                if (cbtEl) cbtEl.checked = AppState.notifTypes.cbt !== false;
-                if (cravEl) cravEl.checked = AppState.notifTypes.craving !== false;
-            }
-
-            if (!("Notification" in window)) {
-                statusText.innerText = "STATUS: NICHT UNTERSTÜTZT (PWA INSTALLIEREN)";
-                statusText.className = "text-[5px] text-gray-400 block";
-                return;
-            }
-
-            if (Notification.permission === "granted" && AppState.pushEnabled) {
-                btn.className = "flex-1 bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded border border-emerald-400 text-[6px] font-bold";
-                btn.innerText = `✅ AKTIV (${AppState.notifFreq || 1}x TÄGLICH)`;
-                statusText.innerText = `STATUS: AKTIV (${AppState.notifFreq || 1}x täglich nach Wunsch konfiguriert)`;
-                statusText.className = "text-[5px] text-emerald-400 block";
-            } else {
-                btn.className = "flex-1 bg-cyan-600 hover:bg-cyan-500 text-white p-2 rounded border border-cyan-400 text-[6px] font-bold";
-                btn.innerText = "🔔 AKTIVIEREN";
-                statusText.innerText = Notification.permission === "denied" ? "STATUS: BLOCKIERT (IN SAFARI/SYSTEM-EINSTELLUNGEN ERLAUBEN)" : "STATUS: NICHT AKTIV";
-                statusText.className = "text-[5px] text-gray-400 block";
-            }
-        }
-
-        function sendTestNotification() {
-            playSound('level');
-            const pool = [];
-            if (!AppState.notifTypes || AppState.notifTypes.motivation !== false) {
-                pool.push({ title: "Prof. Eich: Streak-Status! 🏆", body: "Unglaubliche Disziplin! Quajutsu sammelt mit jedem rauchfreien Tag neue Kraft." });
-            }
-            if (!AppState.notifTypes || AppState.notifTypes.cbt !== false) {
-                pool.push({ title: "Prof. Eich: KVT-Tipp! 🧠", body: "Erkenne deine Trigger: Ein Verlangen dauert im Schnitt nur 3-5 Minuten. Es flacht von alleine ab." });
-            }
-            if (!AppState.notifTypes || AppState.notifTypes.craving !== false) {
-                pool.push({ title: "Prof. Eich: Craving-Schutz! 🌊", body: "Spürst du Rauchdrang? Öffne das 4-7-8 Wasser-Shuriken und atme die Welle einfach weg!" });
-            }
-            if (pool.length === 0) pool.push({ title: "Prof. Eich: Funkspruch! 🐸⚡", body: "Das Labor steht hinter dir. Bleib achtsam und fokussiert!" });
-
-            const picked = pool[Math.floor(Math.random() * pool.length)];
-            triggerSmartPushNotification(picked.title, picked.body);
-        }
-
-        function triggerSmartPushNotification(title, body) {
-            if (!("Notification" in window) || Notification.permission !== "granted") return;
-
-            if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.ready.then(registration => {
-                    registration.showNotification(title, {
-                        body: body,
-                        icon: 'gekkouga.png',
-                        badge: 'gekkouga.png',
-                        vibrate: [200, 100, 200]
-                    });
-                });
-            } else {
-                new Notification(title, {
-                    body: body,
-                    icon: 'gekkouga.png'
-                });
-            }
-        }
-
-        function checkDailyNotification() {
-            if (!AppState.pushEnabled) return;
-            const now = new Date();
-            const todayStr = now.toDateString();
-            const currentHour = now.getHours();
-
-            if (AppState.lastNotifDay !== todayStr) {
-                AppState.lastNotifDay = todayStr;
-                AppState.lastNotifSlots = [];
-                saveState();
-            }
-
-            const freq = AppState.notifFreq || 1;
-            let targetSlot = null;
-
-            if (freq === 1 && currentHour >= 8 && !AppState.lastNotifSlots.includes('slot1')) {
-                targetSlot = 'slot1';
-            } else if (freq === 2) {
-                if (currentHour >= 8 && currentHour < 17 && !AppState.lastNotifSlots.includes('morning')) targetSlot = 'morning';
-                else if (currentHour >= 18 && !AppState.lastNotifSlots.includes('evening')) targetSlot = 'evening';
-            } else if (freq === 3) {
-                if (currentHour >= 8 && currentHour < 12 && !AppState.lastNotifSlots.includes('m')) targetSlot = 'm';
-                else if (currentHour >= 12 && currentHour < 17 && !AppState.lastNotifSlots.includes('n')) targetSlot = 'n';
-                else if (currentHour >= 18 && !AppState.lastNotifSlots.includes('e')) targetSlot = 'e';
-            }
-
-            if (!targetSlot) return;
-
-            // Generate content based on user selected topics
-            const pool = [];
-            const lastSmokeTime = AppState.smokeLogs.length > 0 ? AppState.smokeLogs[AppState.smokeLogs.length - 1] : AppState.startDate;
-            const smokeFreeDays = Math.floor(Math.max(0, Math.floor((Date.now() - lastSmokeTime) / 1000)) / 86400);
-
-            if (!AppState.notifTypes || AppState.notifTypes.motivation !== false) {
-                pool.push({ title: "Prof. Eich: Streak-Status! 🏆", body: `Bereits ${smokeFreeDays} Tag(e) rauchfrei! Smog-Mon verliert zusehends an Boden.` });
-            }
-            if (!AppState.notifTypes || AppState.notifTypes.cbt !== false) {
-                pool.push({ title: "Prof. Eich: KVT-Impuls! 🧠", body: "Nutze die 4-A-Regel: Ausweichen, Abhauen, Ablenken, Ausatmen. Du kontrollierst deine Handlung." });
-            }
-            if (!AppState.notifTypes || AppState.notifTypes.craving !== false) {
-                pool.push({ title: "Prof. Eich: Achtsamkeit! 🌊", body: "Nimm dir 60 Sekunden für tiefes Durchatmen. Jeder überstandene Impuls schwächt die Sucht." });
-            }
-            if (pool.length === 0) pool.push({ title: "Prof. Eich: Tagesziel! 🐸", body: "Ein weiterer rauchfreier Tag für deine Gesundheit!" });
-
-            const picked = pool[Math.floor(Math.random() * pool.length)];
-            triggerSmartPushNotification(picked.title, picked.body);
-
-            AppState.lastNotifSlots.push(targetSlot);
-            saveState();
-        }
-
-        function clearEichChat() {
-            if (!AppState.chatHistory || AppState.chatHistory.length === 0) {
-                alert("Der Chatverlauf ist bereits leer.");
-                return;
-            }
-            if (confirm("Möchtest du den bisherigen Chatverlauf mit Prof. Eich wirklich leeren?")) {
-                AppState.chatHistory = [];
-                saveState();
-                const chatBox = document.getElementById('ai-chat-box');
-                if (chatBox) {
-                    chatBox.innerHTML = `
-                        <div class="text-purple-200">
-                            <span class="font-pixel text-[6px] text-cyan-400 block mb-1">PROF. EICH:</span>
-                            <p id="ai-output" class="font-pixel text-[7px] leading-loose">"Chatverlauf geleert. Ich bin bereit für dein nächstes Anliegen oder eine frische Verhaltensanalyse!"</p>
-                        </div>
-                    `;
-                }
-                playSound('click');
+                if (label) label.innerText = "AKTUELL!";
+                showUpdateToast("App wird aktualisiert & neu geladen...");
+                setTimeout(() => {
+                    window.location.reload();
+                }, 600);
+            } catch (err) {
+                console.warn("Update check failed, reloading anyway:", err);
+                window.location.reload();
             }
         }
         
@@ -1549,8 +1360,7 @@
                 if(AppState.cigsPerDay === undefined) AppState.cigsPerDay = 20; 
                 if(AppState.championSeen === undefined) AppState.championSeen = false;
                 if(AppState.maxSmokeFreeSecsReached === undefined) AppState.maxSmokeFreeSecsReached = 0;
-                if(!AppState.chatHistory) AppState.chatHistory = [];
-            } else {
+                            } else {
                 saveState();
             }
         }
@@ -1564,9 +1374,7 @@
             if (view.classList.contains('hidden-app')) {
                 document.getElementById('set-price').value = AppState.pricePerPack;
                 document.getElementById('set-cigs-pack').value = AppState.cigsPerPack;
-                document.getElementById('set-api').value = AppState.apiKey;
-                updateNotifUI();
-                view.classList.remove('hidden-app');
+                                view.classList.remove('hidden-app');
             } else {
                 view.classList.add('hidden-app');
             }
@@ -1575,8 +1383,7 @@
         function saveSettings() {
             AppState.pricePerPack = parseFloat(document.getElementById('set-price').value) || 10.0;
             AppState.cigsPerPack = parseInt(document.getElementById('set-cigs-pack').value) || 20;
-            AppState.apiKey = document.getElementById('set-api').value.trim();
-            saveState();
+                        saveState();
             updateDashboard(true);
             toggleSettings();
         }
@@ -2275,191 +2082,6 @@
             document.getElementById('breathe-sec').innerText = breatheSec;
         }
 
-        // ================= GEMINI AI (PROF EICH INTERACTIVE DIALOG) =================
-        function renderChatHistory() {
-            const chatBox = document.getElementById('ai-chat-box');
-            if (!chatBox) return;
-            if (!AppState.chatHistory || AppState.chatHistory.length === 0) return;
-
-            chatBox.innerHTML = '';
-            AppState.chatHistory.forEach(msg => {
-                const isUser = msg.sender === 'user';
-                const el = document.createElement('div');
-                el.className = isUser ? 'text-right' : 'text-left';
-                el.innerHTML = `
-                    <span class="font-pixel text-[5px] ${isUser ? 'text-purple-300' : 'text-cyan-400'} block mb-0.5">${isUser ? 'DU:' : 'PROF. EICH:'}</span>
-                    <p class="font-pixel text-[7px] ${isUser ? 'text-white bg-[#1f0b3d] inline-block p-1.5 rounded border border-purple-700' : 'text-purple-100'} leading-loose">${msg.text}</p>
-                `;
-                chatBox.appendChild(el);
-            });
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        function sendQuickPrompt(promptText) {
-            const input = document.getElementById('eich-user-input');
-            if(input) {
-                input.value = promptText;
-                handleEichChat(new Event('submit'));
-            }
-        }
-
-        async function handleEichChat(e) {
-            if (e && e.preventDefault) e.preventDefault();
-            const input = document.getElementById('eich-user-input');
-            if (!input) return;
-            const userText = input.value.trim();
-            if (!userText) return;
-
-            if (!AppState.apiKey) {
-                alert("Prof. Eich benötigt deinen Gemini API-Key (gemini-3.1-flash-lite) in den Einstellungen (OPT-Button oben rechts).");
-                return;
-            }
-
-            // Append user message
-            if (!AppState.chatHistory) AppState.chatHistory = [];
-            AppState.chatHistory.push({ sender: 'user', text: userText });
-            input.value = '';
-            renderChatHistory();
-
-            const chatBox = document.getElementById('ai-chat-box');
-            const loadingMsg = document.createElement('div');
-            loadingMsg.id = 'eich-loading';
-            loadingMsg.innerHTML = `<span class="font-pixel text-[6px] text-cyan-400 block">PROF. EICH:</span><p class="font-pixel text-[7px] text-cyan-200 animate-pulse">Prof. Eich studiert deine Antwort und bereitet Rat vor...</p>`;
-            chatBox.appendChild(loadingMsg);
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            const now = Date.now();
-            const lastSmokeTime = AppState.smokeLogs.length > 0 ? AppState.smokeLogs[AppState.smokeLogs.length - 1] : AppState.startDate;
-            const smokeFreeSecs = Math.max(0, Math.floor((now - lastSmokeTime) / 1000));
-            const smokeFreeDays = Math.floor(smokeFreeSecs / 86400);
-            const smokeFreeHours = Math.floor((smokeFreeSecs % 86400) / 3600);
-
-            const sysInstruction = `Du bist Professor Eich in deiner Rolle als wissenschaftlich fundierter Verhaltenspsychologe und Suchttherapeut für Raucherentwöhnung.
-WICHTIGE ANWEISUNGEN:
-- Vermeide übertriebene, kitschige Pokémon-Phrasen ("Los Pikachu", "Wähle deine Attacke", etc.).
-- Sprich den Nutzer respektvoll, empathisch, direkt und auf Augenhöhe an.
-- Gehe direkt und präzise auf das ein, was der Nutzer in seiner Nachricht beschreibt (z.B. Stress auf der Arbeit, Langeweile, Geselligkeit, Gewohnheit nach dem Essen).
-- Gib echte, psychologisch fundierte und sofort anwendbare Strategien (Kognitive Verhaltenstherapie, Urge Surfing, Dopamin-Regulation, Reiz-Reaktions-Entkopplung, 4-A-Regel).
-- Halte deine Antworten prägnant, klar strukturiert und maximal 3-4 Sätze lang.
-
-Nutzer-Kontext:
-- Rauchfrei seit: ${smokeFreeDays} Tag(en) und ${smokeFreeHours} Stunde(n).
-- Bisherige Rückfälle/geloggte Zigaretten: ${AppState.smokeLogs.length}.`;
-
-            // Build full multi-turn dialogue history for Gemini API
-            const contents = [];
-            
-            // Add system prompt context as first user message or system
-            const recentHistory = AppState.chatHistory.slice(-8); // Last 8 messages
-            
-            recentHistory.forEach((msg, idx) => {
-                if (msg.sender === 'user') {
-                    if (idx === 0) {
-                        contents.push({ role: 'user', parts: [{ text: `${sysInstruction}\n\nNutzer: ${msg.text}` }] });
-                    } else {
-                        contents.push({ role: 'user', parts: [{ text: msg.text }] });
-                    }
-                } else if (msg.sender === 'eich') {
-                    contents.push({ role: 'model', parts: [{ text: msg.text.replace(/^"|"$/g, '') }] });
-                }
-            });
-
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${AppState.apiKey}`;
-
-            try {
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: contents })
-                });
-
-                const data = await res.json();
-                if (data.error) throw new Error(data.error.message);
-
-                const responseText = data.candidates[0].content.parts[0].text.replace(/\*/g, '').trim();
-                const loadEl = document.getElementById('eich-loading');
-                if (loadEl) loadEl.remove();
-
-                AppState.chatHistory.push({ sender: 'eich', text: `${responseText}` });
-                if (AppState.chatHistory.length > 12) AppState.chatHistory = AppState.chatHistory.slice(-12);
-                saveState();
-                renderChatHistory();
-                playSound('heal');
-            } catch(err) {
-                console.error("Eich Chat Error:", err);
-                const loadEl = document.getElementById('eich-loading');
-                if (loadEl) loadEl.remove();
-                AppState.chatHistory.push({ sender: 'eich', text: "Fehler beim Verbindungsaufbau zum Labor! Bitte prüfe deinen API-Key in den Einstellungen (OPT)." });
-                renderChatHistory();
-            }
-        }
-
-        async function analyzePatterns() {
-            if (!AppState.apiKey) {
-                alert("Prof. Eich benötigt den Gemini API-Key (gemini-3.1-flash-lite) in den Einstellungen (OPT-Button).");
-                return;
-            }
-            
-            const logs = AppState.smokeLogs;
-            if (logs.length < 3) {
-                if (!AppState.chatHistory) AppState.chatHistory = [];
-                AppState.chatHistory.push({ sender: 'eich', text: "Ich benötige mindestens 3 geloggte Zeitpunkte im Protokoll, um ein klares Verhaltensmuster zu erkennen." });
-                renderChatHistory();
-                return;
-            }
-
-            const chatBox = document.getElementById('ai-chat-box');
-            const loadingMsg = document.createElement('div');
-            loadingMsg.id = 'eich-loading';
-            loadingMsg.innerHTML = `<span class="font-pixel text-[6px] text-cyan-400 block">PROF. EICH:</span><p class="font-pixel text-[7px] text-cyan-200 animate-pulse">Analysiere Zeitstempel und Gewohnheitsmuster im Labor...</p>`;
-            chatBox.appendChild(loadingMsg);
-            chatBox.scrollTop = chatBox.scrollHeight;
-            
-            const recentLogs = logs.slice(-30).map(ts => {
-                const d = new Date(ts);
-                const days = ['So','Mo','Di','Mi','Do','Fr','Sa'];
-                const pad = num => num.toString().padStart(2, '0');
-                return `${days[d.getDay()]}, ${pad(d.getHours())}:${pad(d.getMinutes())} Uhr`;
-            });
-
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${AppState.apiKey}`;
-            
-            const sysPrompt = `Du bist Professor Eich als seriöser Verhaltensforscher und Suchttherapeut.
-Analysiere die genauen Zeitstempel der gerauchten Zigaretten des Nutzers.
-Identifiziere das primäre Muster (z.B. Morgen-Routine, Nachmittagstief, Abend-Stress).
-Gib dem Nutzer 2 konkrete, psychologische Strategien zur Gewohnheitsunterbrechung.
-Verzichte auf alberne Pokémon-Floskeln. Maximal 3-4 präzise Sätze insgesamt.`;
-            const fullPrompt = `${sysPrompt}\n\nZeitstempel der letzten Zigaretten:\n${recentLogs.join('\n')}`;
-
-            try {
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: fullPrompt }] }]
-                    })
-                });
-                
-                const data = await res.json();
-                if (data.error) throw new Error(data.error.message);
-                
-                const responseText = data.candidates[0].content.parts[0].text.replace(/\*/g, '').trim();
-                const loadEl = document.getElementById('eich-loading');
-                if (loadEl) loadEl.remove();
-
-                if (!AppState.chatHistory) AppState.chatHistory = [];
-                AppState.chatHistory.push({ sender: 'eich', text: `"${responseText}"` });
-                saveState();
-                renderChatHistory();
-                playSound('heal');
-            } catch (e) {
-                console.error("Prof Eich Error:", e);
-                const loadEl = document.getElementById('eich-loading');
-                if (loadEl) loadEl.remove();
-                AppState.chatHistory.push({ sender: 'eich', text: "Verbindungsabbruch zum Labor! Überprüfe deinen API-Key und dein Internet." });
-                renderChatHistory();
-            }
-        }
-    </script>
+        </script>
 </body>
 </html>

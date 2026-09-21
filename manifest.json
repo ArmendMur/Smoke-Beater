@@ -1,0 +1,25 @@
+{
+  "name": "Smoke-Beater",
+  "short_name": "SmokeBeater",
+  "description": "Gamifizierter Rauchfrei-Begleiter im Pokémon-Stil",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0318",
+  "theme_color": "#0b0318",
+  "icons": [
+    {
+      "src": "Pokeball.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "gekkouga.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
