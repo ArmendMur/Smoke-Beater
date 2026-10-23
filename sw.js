@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smoke-beater-v3.0';
+const CACHE_NAME = 'smoke-beater-v3.1';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -37,6 +37,10 @@ self.addEventListener('message', event => {
 });
 
 self.addEventListener('fetch', event => {
+    if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) {
+        return;
+    }
+
     // Navigation requests (HTML document): Network First, fallback to Cache
     if (event.request.mode === 'navigate') {
         event.respondWith(
@@ -57,11 +61,11 @@ self.addEventListener('fetch', event => {
         return;
     }
 
-    // Static assets: Cache First / Stale-While-Revalidate
+    // Static assets & CDN resources: Stale-While-Revalidate
     event.respondWith(
         caches.match(event.request).then(cachedResponse => {
             const fetchPromise = fetch(event.request).then(networkResponse => {
-                if (networkResponse && networkResponse.status === 200) {
+                if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
                     const responseClone = networkResponse.clone();
                     caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
                 }

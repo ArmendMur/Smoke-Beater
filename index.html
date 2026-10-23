@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SmokeBeater">
@@ -372,20 +373,6 @@
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
-        /* Continuous rotation animations controlled by JS classes */
-        .spin-accel-4s {
-            animation: spin-accelerate 4s cubic-bezier(0.5, 0, 1, 1) infinite;
-        }
-        .spin-accel-8s {
-            animation: spin-accelerate 8s cubic-bezier(0.5, 0, 1, 1) infinite;
-        }
-        .spin-ultra-slow {
-            animation: spin-cw 8s linear infinite;
-        }
-        @keyframes spin-accelerate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(1440deg); }
-        }
         @keyframes spin-cw {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -621,7 +608,7 @@
             <div class="mt-3 pt-2.5 border-t border-[#4c1d95] flex items-center justify-between">
                 <div class="flex items-center gap-1.5">
                     <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span id="app-version-tag" class="font-pixel text-[6px] text-purple-300">v3.0 (AKTUELL)</span>
+                    <span id="app-version-tag" class="font-pixel text-[6px] text-purple-300">v3.1 (AKTUELL)</span>
                 </div>
                 <button id="btn-check-update" onclick="checkForAppUpdates()" class="bg-[#1f0b3d] hover:bg-cyan-950 border border-cyan-400/80 text-cyan-300 active:scale-95 font-pixel text-[6px] px-2.5 py-1.5 rounded transition-all flex items-center gap-1 cursor-pointer shadow-[0_0_10px_rgba(6,182,212,0.2)]">
                     <span>🔄</span>
@@ -666,19 +653,19 @@
     </div>
 
     <!-- UPDATE TOAST -->
-    <div id="update-toast" class="fixed top-safe left-4 right-4 z-[50] gba-dark-box !border-4 !border-cyan-400 p-3 transform -translate-y-40 opacity-0 transition-all duration-300 flex justify-between items-center shadow-[0_0_20px_rgba(6,182,212,0.6)]">
+    <div id="update-toast" class="fixed top-safe left-4 right-4 z-[50] gba-dark-box !border-4 !border-cyan-400 p-3 transform -translate-y-40 opacity-0 pointer-events-none transition-all duration-300 flex justify-between items-center shadow-[0_0_20px_rgba(6,182,212,0.6)]">
         <span id="update-toast-msg" class="font-pixel text-[7px] text-cyan-200 leading-[1.5]">APP WIRD AKTUALISIERT...</span>
         <button onclick="window.location.reload()" class="bg-cyan-600 border-2 border-cyan-400 text-white font-pixel text-[6px] px-2 py-2 active:scale-95 shadow-md">NEU LADEN</button>
     </div>
 
     <!-- UNDO TOAST -->
-    <div id="undo-toast" class="fixed top-safe left-4 right-4 z-[50] gba-dark-box !border-4 !border-red-500 p-3 transform -translate-y-40 opacity-0 transition-all duration-300 flex justify-between items-center shadow-[0_0_20px_rgba(239,68,68,0.5)]">
+    <div id="undo-toast" class="fixed top-safe left-4 right-4 z-[50] gba-dark-box !border-4 !border-red-500 p-3 transform -translate-y-40 opacity-0 pointer-events-none transition-all duration-300 flex justify-between items-center shadow-[0_0_20px_rgba(239,68,68,0.5)]">
         <span class="font-pixel text-[7px] text-white leading-[1.5]">TREFFER KASSIERT!<br><span class="text-red-400">Zigarette geloggt.</span></span>
         <button onclick="undoSmoke()" class="bg-red-600 border-2 border-red-900 text-white font-pixel text-[6px] px-2 py-2 active:scale-95 shadow-md">RÜCKGÄNGIG</button>
     </div>
 
     <!-- BADGE MODAL -->
-    <div id="badge-modal" class="hidden-app fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4">
+    <div id="badge-modal" onclick="if(event.target === this) closeBadgeInfo()" class="hidden-app fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4">
         <div class="gba-dialog !border-4 w-full max-w-sm p-5 text-center relative shadow-2xl">
             <button onclick="closeBadgeInfo()" class="absolute top-2 right-3 font-pixel text-red-500 text-lg hover:scale-110">X</button>
             <div class="text-5xl mb-3 mt-2 filter drop-shadow-[0_0_10px_cyan]" id="badge-modal-icon">🪨</div>
@@ -694,7 +681,7 @@
     </div>
 
     <!-- CHAMPION MODAL (HALL OF FAME) -->
-    <div id="champion-modal" class="hidden-app fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4">
+    <div id="champion-modal" onclick="if(event.target === this) closeChampionModal()" class="hidden-app fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4">
         <div class="gba-dialog !bg-[#1f0b3d] !border-4 !border-cyan-400 w-full max-w-md p-6 text-center relative shadow-[0_0_50px_rgba(6,182,212,0.6)] overflow-hidden">
             <div class="relative z-10">
                 <h1 class="font-pixel text-cyan-300 text-xl mb-2 drop-shadow-[0_0_10px_cyan]">RUHMESHALLE</h1>
@@ -728,17 +715,21 @@
     </div>
 
     <!-- SETTINGS MODAL -->
-    <div id="view-settings" class="hidden-app fixed inset-0 z-[60] bg-black/90 p-4 pt-safe pb-safe flex flex-col justify-center overflow-y-auto">
+    <div id="view-settings" onclick="if(event.target === this) { toggleSettings(); playSound('click'); }" class="hidden-app fixed inset-0 z-[60] bg-black/90 p-4 pt-safe pb-safe flex flex-col justify-center overflow-y-auto">
         <div class="gba-dialog !border-4 p-5 max-h-[90vh] overflow-y-auto">
             <h1 class="font-pixel text-[11px] text-cyan-300 mb-4 border-b-2 border-[#4c1d95] pb-2">OPTIONEN</h1>
             <div class="space-y-3 font-pixel text-[7px] text-white leading-[1.8]">
                 <div>
                     <label class="text-purple-300">PREIS PRO SCHACHTEL (€)</label>
-                    <input type="number" step="0.10" id="set-price" class="w-full bg-[#130628] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
+                    <input type="number" step="0.10" min="0.10" id="set-price" class="w-full bg-[#130628] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
                 </div>
                 <div>
                     <label class="text-purple-300">ZIGARETTEN / SCHACHTEL</label>
-                    <input type="number" id="set-cigs-pack" class="w-full bg-[#130628] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
+                    <input type="number" min="1" max="100" id="set-cigs-pack" class="w-full bg-[#130628] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
+                </div>
+                <div>
+                    <label class="text-purple-300">ZIGARETTEN / TAG (BISHER)</label>
+                    <input type="number" min="1" max="200" id="set-cigs-day" class="w-full bg-[#130628] text-white border-2 border-[#7c3aed] p-2 outline-none mt-1 font-sans text-sm font-bold">
                 </div>
                 <!-- APP UPDATE OPTION -->
                 <div class="border-t border-[#4c1d95] pt-3">
@@ -747,7 +738,7 @@
                         <span>🔄</span>
                         <span>APP JETZT AKTUALISIEREN</span>
                     </button>
-                    <span class="text-[5px] text-purple-300 block mt-1 text-center">Version 3.0 • Lädt neueste Version vom Server</span>
+                    <span class="text-[5px] text-purple-300 block mt-1 text-center">Version 3.1 • Lädt neueste Version vom Server</span>
                 </div>
                 
                 <div class="pt-2 flex flex-col gap-2">
@@ -798,6 +789,7 @@
         let breatheInterval;
         let isBreathing = false;
         let undoTimeout;
+        let updateToastTimeout;
 
         // ====== AUTHENTIC 8-BIT / GBA POKEMON RETRO AUDIO ENGINE ======
         let audioCtx = null;
@@ -901,7 +893,9 @@
                     gain.gain.linearRampToValueAtTime(0, now + 0.2);
                     osc.connect(gain);
                     gain.connect(ctx.destination);
-                           } else if (type === 'smog_launch') {
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } else if (type === 'smog_launch') {
                     // Toxic smog / sludge launch sound
                     playNoise(ctx, 0.25, 0.3);
                     const osc = ctx.createOscillator();
@@ -1214,6 +1208,8 @@
                         navigator.serviceWorker.getRegistration().then(reg => {
                             if (reg) reg.update().catch(() => {});
                         });
+                    } else if (isBreathing) {
+                        toggleBreathe();
                     }
                 });
             }
@@ -1224,6 +1220,17 @@
             };
             ['click', 'touchstart', 'keydown'].forEach(evt => {
                 window.addEventListener(evt, unlockAudio, { passive: true });
+            });
+
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const badgeModal = document.getElementById('badge-modal');
+                    const champModal = document.getElementById('champion-modal');
+                    const settingsModal = document.getElementById('view-settings');
+                    if (badgeModal && !badgeModal.classList.contains('hidden-app')) closeBadgeInfo();
+                    if (champModal && !champModal.classList.contains('hidden-app')) closeChampionModal();
+                    if (settingsModal && !settingsModal.classList.contains('hidden-app')) toggleSettings();
+                }
             });
             
             // Play Quajutsu Water Shuriken attack on load to reward being smoke-free
@@ -1250,11 +1257,12 @@
             const msgEl = document.getElementById('update-toast-msg');
             if (msg && msgEl) msgEl.innerText = msg;
             if (toast) {
-                toast.classList.remove('opacity-0', '-translate-y-40');
+                toast.classList.remove('opacity-0', '-translate-y-40', 'pointer-events-none');
                 toast.classList.add('opacity-100', 'translate-y-0');
-                setTimeout(() => {
+                clearTimeout(updateToastTimeout);
+                updateToastTimeout = setTimeout(() => {
                     toast.classList.remove('opacity-100', 'translate-y-0');
-                    toast.classList.add('opacity-0', '-translate-y-40');
+                    toast.classList.add('opacity-0', '-translate-y-40', 'pointer-events-none');
                 }, 3500);
             }
         }
@@ -1292,6 +1300,7 @@
         }
         
         function spawnSpore() {
+            if (document.hidden) return;
             const container = document.getElementById('smogmon-container');
             if (!container) return;
             const now = Date.now();
@@ -1354,19 +1363,30 @@
 
         // ================= STATE MANAGEMENT =================
         function loadState() {
-            const saved = localStorage.getItem('smokeAppV2');
-            if (saved) {
-                AppState = { ...AppState, ...JSON.parse(saved) };
-                if(AppState.cigsPerDay === undefined) AppState.cigsPerDay = 20; 
-                if(AppState.championSeen === undefined) AppState.championSeen = false;
-                if(AppState.maxSmokeFreeSecsReached === undefined) AppState.maxSmokeFreeSecsReached = 0;
-                            } else {
+            try {
+                const saved = localStorage.getItem('smokeAppV2');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    AppState = { ...AppState, ...parsed };
+                    if (!Array.isArray(AppState.smokeLogs)) AppState.smokeLogs = [];
+                    AppState.pricePerPack = Math.max(0.1, parseFloat(AppState.pricePerPack) || 10.0);
+                    AppState.cigsPerPack = Math.max(1, parseInt(AppState.cigsPerPack) || 20);
+                    AppState.cigsPerDay = Math.max(1, parseInt(AppState.cigsPerDay) || 20);
+                    if (AppState.championSeen === undefined) AppState.championSeen = false;
+                    if (AppState.maxSmokeFreeSecsReached === undefined) AppState.maxSmokeFreeSecsReached = 0;
+                } else {
+                    saveState();
+                }
+            } catch (e) {
+                console.warn('Error loading state:', e);
                 saveState();
             }
         }
 
         function saveState() {
-            localStorage.setItem('smokeAppV2', JSON.stringify(AppState));
+            try {
+                localStorage.setItem('smokeAppV2', JSON.stringify(AppState));
+            } catch (e) {}
         }
 
         function toggleSettings() {
@@ -1374,17 +1394,24 @@
             if (view.classList.contains('hidden-app')) {
                 document.getElementById('set-price').value = AppState.pricePerPack;
                 document.getElementById('set-cigs-pack').value = AppState.cigsPerPack;
-                                view.classList.remove('hidden-app');
+                const cigsDayEl = document.getElementById('set-cigs-day');
+                if (cigsDayEl) cigsDayEl.value = AppState.cigsPerDay || 20;
+                view.classList.remove('hidden-app');
             } else {
                 view.classList.add('hidden-app');
             }
         }
 
         function saveSettings() {
-            AppState.pricePerPack = parseFloat(document.getElementById('set-price').value) || 10.0;
-            AppState.cigsPerPack = parseInt(document.getElementById('set-cigs-pack').value) || 20;
-                        saveState();
-            updateDashboard(true);
+            AppState.pricePerPack = Math.max(0.1, parseFloat(document.getElementById('set-price').value) || 10.0);
+            AppState.cigsPerPack = Math.max(1, parseInt(document.getElementById('set-cigs-pack').value) || 20);
+            const cigsDayEl = document.getElementById('set-cigs-day');
+            if (cigsDayEl) {
+                AppState.cigsPerDay = Math.max(1, parseInt(cigsDayEl.value) || 20);
+            }
+            saveState();
+            updateDashboard(true, true);
+            renderChart(chartMode);
             toggleSettings();
         }
 
@@ -1399,8 +1426,8 @@
         // ================= ENGINE & RPG =================
         function startEngine() {
             if(engineInterval) clearInterval(engineInterval);
-            engineInterval = setInterval(() => updateDashboard(false), 1000);
-            updateDashboard(true);
+            engineInterval = setInterval(() => updateDashboard(false, false), 1000);
+            updateDashboard(true, true);
         }
 
         function setHpBar(elId, pct) {
@@ -1522,7 +1549,7 @@
             }
         }
 
-        function updateDashboard(forceSave) {
+        function updateDashboard(forceSave, silentBadges = false) {
             const now = Date.now();
             const diffSecs = Math.max(0, (now - AppState.lastUpdate) / 1000);
             
@@ -1588,15 +1615,25 @@
             }
 
             // Finance
-            const cigCost = AppState.pricePerPack / AppState.cigsPerPack;
+            const cigCost = (AppState.cigsPerPack > 0) ? (AppState.pricePerPack / AppState.cigsPerPack) : 0.50;
             const actualCost = AppState.smokeLogs.length * cigCost; 
-            const dailyCost = AppState.cigsPerDay * cigCost;
+            const dailyCost = (AppState.cigsPerDay || 20) * cigCost;
             const gespart = (smokeFreeSecs / 86400) * dailyCost; 
 
             const costEl = document.getElementById('total-cost');
             const saveEl = document.getElementById('total-saved');
             if(costEl) costEl.innerText = `€ ${actualCost.toFixed(2).replace('.', ',')}`;
             if(saveEl) saveEl.innerText = `€ ${gespart.toFixed(2).replace('.', ',')}`;
+
+            // Sync Pokédex Analytics Live Badges
+            const nowDate = new Date(now);
+            const startOfToday = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate()).getTime();
+            let todayCount = 0;
+            AppState.smokeLogs.forEach(ts => { if (ts >= startOfToday) todayCount++; });
+            const elToday = document.getElementById('stat-count-today');
+            const elSaved = document.getElementById('stat-money-saved');
+            if (elToday) elToday.innerText = todayCount;
+            if (elSaved) elSaved.innerText = `${gespart.toFixed(2).replace('.', ',')}€`;
 
             // Badges Update & Arena Logic (With "Had Before" History indicator ⭐)
             let unlockedCount = 0;
@@ -1622,8 +1659,10 @@
 
                     if (isCurrentlyActive && !el.classList.contains('unlocked')) {
                         el.classList.add('unlocked');
-                        playSound('badge_unlock');
-                        showFloatingText('ORDEN ERHALTEN!', '#00f0ff');
+                        if (!silentBadges) {
+                            playSound('badge_unlock');
+                            showFloatingText('ORDEN ERHALTEN!', '#00f0ff');
+                        }
                     } else if (!isCurrentlyActive) {
                         el.classList.remove('unlocked');
                         if (hadInPast) {
@@ -1655,13 +1694,16 @@
             updateArena(unlockedCount);
 
             // Champion Trigger
+            const btnChamp = document.getElementById('btn-champ');
             if (smokeFreeSecs >= oneYearSecs) {
-                document.getElementById('btn-champ').classList.remove('hidden-app');
+                if (btnChamp) btnChamp.classList.remove('hidden-app');
                 if (!AppState.championSeen) {
                     showChampionModal(gespart, AppState.cigsPerDay * 365);
                     AppState.championSeen = true;
                     saveState();
                 }
+            } else if (btnChamp) {
+                btnChamp.classList.add('hidden-app');
             }
         }
 
@@ -1698,10 +1740,10 @@
             
             const toast = document.getElementById('undo-toast');
             if (toast) {
-                toast.classList.remove('-translate-y-40', 'opacity-0');
+                toast.classList.remove('-translate-y-40', 'opacity-0', 'pointer-events-none');
                 clearTimeout(undoTimeout);
                 undoTimeout = setTimeout(() => {
-                    toast.classList.add('-translate-y-40', 'opacity-0');
+                    toast.classList.add('-translate-y-40', 'opacity-0', 'pointer-events-none');
                 }, 5000);
             }
         }
@@ -1712,12 +1754,12 @@
                 AppState.smokeLogs.pop();
                 AppState.hp = Math.min(100, AppState.hp + 20); 
                 saveState();
-                updateDashboard(true);
+                updateDashboard(true, true);
                 renderChart(chartMode);
                 showFloatingText('HEILUNG!', '#10b981');
             }
             const toast = document.getElementById('undo-toast');
-            if (toast) toast.classList.add('-translate-y-40', 'opacity-0');
+            if (toast) toast.classList.add('-translate-y-40', 'opacity-0', 'pointer-events-none');
             clearTimeout(undoTimeout);
         }
 
@@ -1846,9 +1888,8 @@
             const pricePerPack = Number(AppState.pricePerPack) || 10.0;
             const cigsPerDay = Number(AppState.cigsPerDay) || 20;
             const cigCost = cigsPerPack > 0 ? (pricePerPack / cigsPerPack) : 0.50;
-            const smokedPerSec = cigsPerDay / 86400;
-            const avoidedCount = Math.max(0, Math.floor(smokeFreeSecs * smokedPerSec));
-            const savedMoney = Math.max(0, avoidedCount * cigCost);
+            const dailyCost = cigsPerDay * cigCost;
+            const savedMoney = Math.max(0, (smokeFreeSecs / 86400) * dailyCost);
 
             const elToday = document.getElementById('stat-count-today');
             const elSaved = document.getElementById('stat-money-saved');
@@ -2033,6 +2074,8 @@
             if(phase === 'off') {
                 stopBreatheAudio();
                 shurikenSpeed = 0;
+                shurikenOuterAngle = 0;
+                shurikenInnerAngle = 45;
                 targetShurikenScale = 1.0;
                 shurikenScale = 1.0;
                 circle.style.transition = 'transform 0.6s ease-out, background-color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease';
